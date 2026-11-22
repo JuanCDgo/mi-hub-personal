@@ -156,12 +156,12 @@
             <!-- Dose 1: 05:00 AM -->
             <div id="cardDosisManana" class="bg-charcoal-tile rounded-2xl p-4 border border-white/10 flex flex-col justify-between gap-3">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-charcoal-muted tabular-nums">05:00 AM • Mañana</span>
+                <span id="horarioMananaHeader" class="text-[11px] font-bold uppercase tracking-wider text-charcoal-muted tabular-nums">05:00 AM • Mañana</span>
                 <span id="badgeManana" class="px-2.5 py-0.5 rounded-full bg-oat-card text-charcoal-main text-[10px] font-bold uppercase tracking-wider">✓ Tomada</span>
               </div>
               <div>
                 <p id="nombrePastillaManana" class="text-base font-bold text-oat-card">Pastilla Mañana</p>
-                <p class="text-xs text-charcoal-muted">Horario fijo • 05:00 hs</p>
+                <p id="horarioMananaSub" class="text-xs text-charcoal-muted">Horario fijo • 05:00 hs</p>
               </div>
               <button type="button" id="btnToggleManana" onclick="togglePastilla('manana')" class="w-full py-1.5 px-3 rounded-full bg-charcoal-main/70 hover:bg-charcoal-ink text-oat-card/90 text-[11px] font-bold uppercase tracking-wider border border-white/15 transition-all">
                 Desmarcar
@@ -173,13 +173,13 @@
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-1.5">
                   <span id="dotNoche" class="w-2 h-2 rounded-full bg-loud-red animate-pulse"></span>
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-oat-card tabular-nums">20:45 HS • Pre-Cena</span>
+                  <span id="horarioNocheHeader" class="text-[11px] font-bold uppercase tracking-wider text-oat-card tabular-nums">20:45 HS • Pre-Cena</span>
                 </div>
                 <span id="badgeNoche" class="text-[10px] font-bold uppercase tracking-wider text-loud-red bg-loud-red/15 px-2 py-0.5 rounded-full">Pendiente</span>
               </div>
               <div>
                 <p id="nombrePastillaNoche" class="text-base font-bold text-oat-card">Pastilla Pre-Cena</p>
-                <p class="text-xs text-charcoal-muted">Antes de las 21:00 hs</p>
+                <p id="horarioNocheSub" class="text-xs text-charcoal-muted">Antes de las 21:00 hs</p>
               </div>
               <!-- 10% LOUD RED CTA -->
               <button type="button" id="btnToggleNoche" onclick="togglePastilla('noche')" class="w-full py-2 px-3 rounded-full bg-loud-red hover:bg-loud-dark active:scale-95 text-white text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all">
@@ -197,12 +197,12 @@
                 <span class="text-[11px] font-bold uppercase tracking-widest text-oat-card">Nivel Glucémico</span>
               </div>
               <div class="flex items-center gap-2">
-                <button type="button" onclick="document.getElementById('dlgGlucemia').showModal()" class="px-3 py-1 rounded-full bg-oat-card text-charcoal-ink hover:bg-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all active:scale-95">
+                <button type="button" onclick="abrirModalGlucemia()" class="px-3 py-1 rounded-full bg-oat-card text-charcoal-ink hover:bg-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all active:scale-95">
                   <span class="material-symbols-outlined text-[14px]">add</span>
                   <span>Cargar</span>
                 </button>
                 <button type="button" onclick="document.getElementById('dlgHistorialSalud').showModal()" class="text-[11px] font-bold uppercase tracking-wider text-charcoal-muted hover:text-oat-card underline underline-offset-4">
-                  Historial / PDF
+                  Editar / PDF
                 </button>
               </div>
             </div>
@@ -210,11 +210,13 @@
             <!-- Giant Metric Display + Historical Trend Chart -->
             <div class="flex flex-wrap items-center justify-between gap-4">
               <div class="flex items-baseline gap-3">
-                <span id="lastGlucoseValue" class="font-serif text-5xl font-semibold text-oat-card tabular-nums leading-none">114</span>
-                <div class="flex flex-col">
-                  <span class="text-sm font-bold text-oat-card">mg/dL</span>
-                  <span id="lastGlucoseContext" class="text-xs text-charcoal-muted">(Última: En ayunas • Rango 70-130)</span>
-                </div>
+                <button type="button" onclick="editarUltimaGlucemia()" title="Click para editar esta medición" class="text-left group flex items-baseline gap-3 cursor-pointer">
+                  <span id="lastGlucoseValue" class="font-serif text-5xl font-semibold text-oat-card group-hover:text-white tabular-nums leading-none transition-colors">128</span>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-bold text-oat-card flex items-center gap-1">mg/dL <span class="material-symbols-outlined text-[13px] text-charcoal-muted group-hover:text-oat-card">edit</span></span>
+                    <span id="lastGlucoseContext" class="text-xs text-charcoal-muted">(Última: En ayunas • Dom 22/11)</span>
+                  </div>
+                </button>
               </div>
               <div id="glucoseChartContainer" class="flex-1 min-w-[180px] max-w-[260px] h-16 bg-charcoal-main/60 rounded-xl border border-white/10 p-1.5 flex items-center justify-center">
                 <!-- Populated dynamically with SVG chart -->
@@ -250,7 +252,7 @@
             <span class="material-symbols-outlined text-[15px]">share</span>
             <span>Enviar resumen por WhatsApp</span>
           </button>
-          <span id="avgGlucoseBadge" class="text-oat-card font-semibold tabular-nums">Prom: 112 mg/dL</span>
+          <span id="avgGlucoseBadge" class="text-oat-card font-semibold tabular-nums">Promedio: 128 mg/dL</span>
         </div>
       </section>
 
@@ -505,9 +507,17 @@
       </div>
 
       <form id="formGlucemia" onsubmit="guardarGlucemia(event)" class="flex flex-col gap-4">
-        <div>
-          <label for="inputGlucoseVal" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Valor medido (mg/dL)</label>
-          <input id="inputGlucoseVal" type="number" min="40" max="500" required autofocus placeholder="Ej: 118" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-4 py-3 text-2xl font-bold text-charcoal-ink tabular-nums focus:outline-none focus:border-charcoal-ink" />
+        <input id="inputGlucoseId" type="hidden" value="" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="inputGlucoseVal" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Valor medido (mg/dL)</label>
+            <input id="inputGlucoseVal" type="number" min="40" max="500" required autofocus placeholder="Ej: 128" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-4 py-3 text-2xl font-bold text-charcoal-ink tabular-nums focus:outline-none focus:border-charcoal-ink" />
+          </div>
+          <div>
+            <label for="inputGlucoseDate" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Fecha y hora</label>
+            <input id="inputGlucoseDate" type="text" required placeholder="Ej: Dom 22/11 (10:05)" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-3 text-sm font-semibold text-charcoal-ink focus:outline-none focus:border-charcoal-ink" />
+          </div>
         </div>
 
         <div>
@@ -522,12 +532,15 @@
 
         <div>
           <label for="inputGlucoseNote" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Nota opcional (comida / actividad)</label>
-          <input id="inputGlucoseNote" type="text" placeholder="Ej: Asado con ensalada, caminata 20 min..." class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-sm text-charcoal-ink focus:outline-none focus:border-charcoal-ink" />
+          <input id="inputGlucoseNote" type="text" placeholder="Ej: Control en ayunas, caminata 20 min..." class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-sm text-charcoal-ink focus:outline-none focus:border-charcoal-ink" />
         </div>
 
-        <div class="flex items-center justify-end gap-2 pt-2">
-          <button type="button" onclick="document.getElementById('dlgGlucemia').close()" class="px-4 py-2.5 rounded-full bg-oat-subtle text-charcoal-ink text-xs font-bold uppercase tracking-wider">Cancelar</button>
-          <button type="submit" class="px-6 py-2.5 rounded-full bg-loud-red hover:bg-loud-dark text-white text-xs font-bold uppercase tracking-wider shadow-sm">Guardar Medición</button>
+        <div class="flex items-center justify-between gap-2 pt-2">
+          <button type="button" id="btnDeleteGlucoseModal" onclick="eliminarGlucemiaDesdeModal()" class="hidden px-3.5 py-2.5 rounded-full bg-loud-red/15 hover:bg-loud-red/25 text-loud-red text-xs font-bold uppercase tracking-wider">Eliminar</button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="document.getElementById('dlgGlucemia').close()" class="px-4 py-2.5 rounded-full bg-oat-subtle text-charcoal-ink text-xs font-bold uppercase tracking-wider">Cancelar</button>
+            <button type="submit" id="btnSubmitGlucoseModal" class="px-6 py-2.5 rounded-full bg-loud-red hover:bg-loud-dark text-white text-xs font-bold uppercase tracking-wider shadow-sm">Guardar Medición</button>
+          </div>
         </div>
       </form>
     </div>
@@ -546,15 +559,39 @@
         <button type="button" onclick="document.getElementById('dlgHistorialSalud').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
       </div>
 
-      <!-- Editable Pill Names -->
+      <!-- Editable Pill Names & Schedules -->
       <div class="bg-oat-canvas p-4 rounded-xl border border-oat-border grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label for="editPillManana" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Nombre Pastilla 05:00 AM</label>
-          <input id="editPillManana" type="text" onchange="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-3 py-1.5 text-sm font-semibold text-charcoal-ink" />
+        <div class="flex flex-col gap-2">
+          <div>
+            <label for="editPillManana" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Pastilla Mañana (Nombre)</label>
+            <input id="editPillManana" type="text" oninput="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-3 py-1.5 text-sm font-semibold text-charcoal-ink" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="editPillMananaHeader" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Etiqueta Horario</label>
+              <input id="editPillMananaHeader" type="text" oninput="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-2.5 py-1 text-xs font-semibold text-charcoal-ink" />
+            </div>
+            <div>
+              <label for="editPillMananaSub" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Detalle</label>
+              <input id="editPillMananaSub" type="text" oninput="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-2.5 py-1 text-xs text-charcoal-ink" />
+            </div>
+          </div>
         </div>
-        <div>
-          <label for="editPillNoche" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Nombre Pastilla 20:45 HS (Pre-Cena)</label>
-          <input id="editPillNoche" type="text" onchange="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-3 py-1.5 text-sm font-semibold text-charcoal-ink" />
+        <div class="flex flex-col gap-2">
+          <div>
+            <label for="editPillNoche" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Pastilla Pre-Cena (Nombre)</label>
+            <input id="editPillNoche" type="text" oninput="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-3 py-1.5 text-sm font-semibold text-charcoal-ink" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="editPillNocheHeader" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Etiqueta Horario</label>
+              <input id="editPillNocheHeader" type="text" oninput="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-2.5 py-1 text-xs font-semibold text-charcoal-ink" />
+            </div>
+            <div>
+              <label for="editPillNocheSub" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Detalle</label>
+              <input id="editPillNocheSub" type="text" oninput="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-2.5 py-1 text-xs text-charcoal-ink" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -567,6 +604,7 @@
               <th class="py-2.5 px-3">Momento</th>
               <th class="py-2.5 px-3">Valor</th>
               <th class="py-2.5 px-3">Notas</th>
+              <th class="py-2.5 px-3 text-right no-print">Acciones</th>
             </tr>
           </thead>
           <tbody id="glucoseHistoryTableBody" class="divide-y divide-oat-border tabular-nums">
@@ -576,14 +614,24 @@
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
-        <button type="button" onclick="compartirReporteWhatsApp()" class="px-4 py-2 rounded-full bg-charcoal-main text-oat-card text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[16px]">share</span>
-          <span>Mandar por WhatsApp</span>
-        </button>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="abrirModalGlucemia()" class="px-3.5 py-2 rounded-full bg-oat-subtle hover:bg-oat-border text-charcoal-ink text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">add</span>
+            <span>Cargar</span>
+          </button>
+          <button type="button" onclick="limpiarHistorialGlucemia()" class="px-3.5 py-2 rounded-full bg-loud-red/10 hover:bg-loud-red/20 text-loud-red text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">delete_sweep</span>
+            <span>Borrar todo</span>
+          </button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="compartirReporteWhatsApp()" class="px-4 py-2 rounded-full bg-charcoal-main text-oat-card text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">share</span>
+            <span>WhatsApp</span>
+          </button>
           <button type="button" onclick="imprimirReporteMedico()" class="px-5 py-2 rounded-full bg-loud-red text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[16px]">print</span>
-            <span>Imprimir / Guardar PDF</span>
+            <span>Imprimir / PDF</span>
           </button>
         </div>
       </div>
@@ -922,14 +970,18 @@
         manana: 'Metformina 850mg (Mañana)',
         noche: 'Metformina 850mg (Pre-Cena)'
       },
+      pillSchedules: {
+        mananaHeader: '05:00 AM • Mañana',
+        mananaSub: 'Horario fijo • 05:00 hs',
+        nocheHeader: '20:45 HS • Pre-Cena',
+        nocheSub: 'Antes de las 21:00 hs'
+      },
       pillsTakenByDate: {
         [todayKey]: { manana: true, noche: false }
       },
+      glucoseResetV1: true,
       glucoseLogs: [
-        { date: 'Viernes', slot: 'En ayunas', value: 114, note: 'Desayuno liviano' },
-        { date: 'Miércoles', slot: 'Antes de almorzar', value: 118, note: 'Día de por medio' },
-        { date: 'Lunes', slot: '2 hs después de almorzar', value: 126, note: 'Pollo con ensalada' },
-        { date: 'Sábado ant.', slot: '2 hs después de cenar (Vie/Sáb)', value: 132, note: 'Mirando serie a las 23:15' }
+        { id: 1763816728000, date: 'Dom 22/11 (10:05)', slot: 'En ayunas', value: 128, note: 'Control en ayunas' }
       ],
       watchlist: [
         { id: 1, title: 'Severance', platform: 'Apple TV+', season: 2, ep: 4, note: 'Restan 24 min' },
@@ -958,7 +1010,22 @@
         if (parsed.spotifyEmbedUrl && parsed.spotifyEmbedUrl.includes('37i9dQZF1DX5YTAi6JhwZm')) {
           parsed.spotifyEmbedUrl = defaultState.spotifyEmbedUrl;
         }
-        return { ...structuredClone(defaultState), ...parsed };
+        const merged = {
+          ...structuredClone(defaultState),
+          ...parsed,
+          pillSchedules: { ...defaultState.pillSchedules, ...(parsed.pillSchedules || {}) }
+        };
+        if (!parsed.glucoseResetV1) {
+          merged.glucoseLogs = structuredClone(defaultState.glucoseLogs);
+          merged.glucoseResetV1 = true;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        } else {
+          merged.glucoseLogs = (merged.glucoseLogs || []).map((entry, idx) => ({
+            id: entry.id || Date.now() + idx,
+            ...entry
+          }));
+        }
+        return merged;
       } catch {
         return structuredClone(defaultState);
       }
@@ -993,12 +1060,39 @@
       };
     }
 
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatNowGlucoseDate() {
+      const now = new Date();
+      const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const t = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+      return `${dias[now.getDay()]} ${d}/${m} (${t})`;
+    }
+
     function renderSalud() {
       const todayPills = state.pillsTakenByDate[todayKey] || { manana: false, noche: false };
+      const schedules = state.pillSchedules || defaultState.pillSchedules;
       document.getElementById('nombrePastillaManana').textContent = state.pillNames.manana;
       document.getElementById('nombrePastillaNoche').textContent = state.pillNames.noche;
+      document.getElementById('horarioMananaHeader').textContent = schedules.mananaHeader;
+      document.getElementById('horarioMananaSub').textContent = schedules.mananaSub;
+      document.getElementById('horarioNocheHeader').textContent = schedules.nocheHeader;
+      document.getElementById('horarioNocheSub').textContent = schedules.nocheSub;
       document.getElementById('editPillManana').value = state.pillNames.manana;
       document.getElementById('editPillNoche').value = state.pillNames.noche;
+      document.getElementById('editPillMananaHeader').value = schedules.mananaHeader;
+      document.getElementById('editPillMananaSub').value = schedules.mananaSub;
+      document.getElementById('editPillNocheHeader').value = schedules.nocheHeader;
+      document.getElementById('editPillNocheSub').value = schedules.nocheSub;
       document.getElementById('inputWaPhone').value = state.waPhone || '';
 
       // Dose 1: 05:00 AM
@@ -1038,13 +1132,17 @@
       }
 
       // Glucose display + SVG Historical Chart
-      const logs = state.glucoseLogs;
+      const logs = state.glucoseLogs || [];
       if (logs.length > 0) {
         const latest = logs[0];
         document.getElementById('lastGlucoseValue').textContent = latest.value;
         document.getElementById('lastGlucoseContext').textContent = `(Última: ${latest.slot} • ${latest.date})`;
         const avg = Math.round(logs.reduce((acc, item) => acc + Number(item.value), 0) / logs.length);
         document.getElementById('avgGlucoseBadge').textContent = `Promedio: ${avg} mg/dL`;
+      } else {
+        document.getElementById('lastGlucoseValue').textContent = '--';
+        document.getElementById('lastGlucoseContext').textContent = '(Sin mediciones registradas)';
+        document.getElementById('avgGlucoseBadge').textContent = 'Promedio: -- mg/dL';
       }
       renderGlucoseChart(logs);
 
@@ -1052,31 +1150,48 @@
       document.getElementById('esquemaDiaBadge').textContent = smart.badge;
       document.getElementById('nextGlucoseSlot').textContent = smart.nextSlot;
 
-      // Render 4 recent boxes in weekly strip
+      // Render 4 recent boxes in weekly strip (clickable to edit)
       const strip = document.getElementById('weeklyGlucoseStrip');
       const recent4 = logs.slice(0, 4);
-      strip.innerHTML = recent4.map((entry, idx) => {
-        const isFirst = idx === 0;
-        return `
-          <div class="flex flex-col items-center p-2 rounded-xl text-center border ${isFirst ? 'bg-loud-red/20 border-loud-red' : 'bg-charcoal-main/70 border-white/10'}">
-            <span class="text-[10px] font-bold uppercase ${isFirst ? 'text-white' : 'text-charcoal-muted'} truncate w-full">${entry.date}</span>
-            <span class="text-sm font-bold text-oat-card tabular-nums mt-0.5">${entry.value} mg</span>
-            <span class="text-[9px] font-semibold ${isFirst ? 'text-oat-card' : 'text-charcoal-muted'} truncate w-full">${entry.slot.replace('2 hs después de ', 'Post-').replace('Antes de ', 'Pre-')}</span>
-          </div>
-        `;
-      }).join('');
+      if (recent4.length === 0) {
+        strip.innerHTML = `<div class="col-span-4 p-3 rounded-xl bg-charcoal-main/60 border border-white/10 text-center text-xs text-charcoal-muted">Sin mediciones. Tocá <strong>Cargar</strong> para registrar tu control.</div>`;
+      } else {
+        strip.innerHTML = recent4.map((entry, idx) => {
+          const isFirst = idx === 0;
+          const shortSlot = escapeHtml(entry.slot.replace('2 hs después de ', 'Post-').replace('Antes de ', 'Pre-'));
+          return `
+            <button type="button" onclick="abrirModalGlucemia(${Number(entry.id)})" title="Click para editar o borrar" class="flex flex-col items-center p-2 rounded-xl text-center border transition-all hover:scale-[1.02] cursor-pointer ${isFirst ? 'bg-loud-red/20 border-loud-red' : 'bg-charcoal-main/70 border-white/10 hover:border-white/30'}">
+              <span class="text-[10px] font-bold uppercase ${isFirst ? 'text-white' : 'text-charcoal-muted'} truncate w-full">${escapeHtml(entry.date)}</span>
+              <span class="text-sm font-bold text-oat-card tabular-nums mt-0.5">${Number(entry.value)} mg</span>
+              <span class="text-[9px] font-semibold ${isFirst ? 'text-oat-card' : 'text-charcoal-muted'} truncate w-full">${shortSlot}</span>
+            </button>
+          `;
+        }).join('');
+      }
 
       // Render history table inside dialog & printable view (capped at 100 rows for DOM performance)
       const tbody = document.getElementById('glucoseHistoryTableBody');
       const visibleLogs = logs.slice(0, 100);
-      tbody.innerHTML = visibleLogs.map((entry) => `
-        <tr>
-          <td class="py-2 px-3 font-semibold text-charcoal-ink">${entry.date}</td>
-          <td class="py-2 px-3 text-charcoal-text">${entry.slot}</td>
-          <td class="py-2 px-3 font-bold text-charcoal-ink">${entry.value} mg/dL</td>
-          <td class="py-2 px-3 text-charcoal-text/80">${entry.note || '—'}</td>
-        </tr>
-      `).join('');
+      if (visibleLogs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-6 px-3 text-center text-charcoal-text/60">No hay mediciones cargadas.</td></tr>`;
+      } else {
+        tbody.innerHTML = visibleLogs.map((entry) => `
+          <tr class="hover:bg-oat-subtle/50">
+            <td class="py-2 px-3 font-semibold text-charcoal-ink">${escapeHtml(entry.date)}</td>
+            <td class="py-2 px-3 text-charcoal-text">${escapeHtml(entry.slot)}</td>
+            <td class="py-2 px-3 font-bold text-charcoal-ink">${Number(entry.value)} mg/dL</td>
+            <td class="py-2 px-3 text-charcoal-text/80">${escapeHtml(entry.note || '—')}</td>
+            <td class="py-2 px-3 text-right no-print whitespace-nowrap">
+              <button type="button" onclick="abrirModalGlucemia(${Number(entry.id)})" title="Editar medición" class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-oat-subtle hover:bg-oat-border text-charcoal-ink mr-1">
+                <span class="material-symbols-outlined text-[15px]">edit</span>
+              </button>
+              <button type="button" onclick="eliminarGlucemia(${Number(entry.id)})" title="Eliminar medición" class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-loud-red/10 hover:bg-loud-red/20 text-loud-red">
+                <span class="material-symbols-outlined text-[15px]">delete</span>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
     }
 
     function renderGlucoseChart(logs) {
@@ -1132,41 +1247,136 @@
     function actualizarNombresPastillas() {
       const m = document.getElementById('editPillManana').value.trim();
       const n = document.getElementById('editPillNoche').value.trim();
+      const mH = document.getElementById('editPillMananaHeader').value.trim();
+      const mS = document.getElementById('editPillMananaSub').value.trim();
+      const nH = document.getElementById('editPillNocheHeader').value.trim();
+      const nS = document.getElementById('editPillNocheSub').value.trim();
       if (m) state.pillNames.manana = m;
       if (n) state.pillNames.noche = n;
+      if (!state.pillSchedules) state.pillSchedules = { ...defaultState.pillSchedules };
+      if (mH) state.pillSchedules.mananaHeader = mH;
+      if (mS) state.pillSchedules.mananaSub = mS;
+      if (nH) state.pillSchedules.nocheHeader = nH;
+      if (nS) state.pillSchedules.nocheSub = nS;
       saveState();
       renderSalud();
     }
 
+    function abrirModalGlucemia(id = null) {
+      const idInput = document.getElementById('inputGlucoseId');
+      const valInput = document.getElementById('inputGlucoseVal');
+      const dateInput = document.getElementById('inputGlucoseDate');
+      const slotInput = document.getElementById('inputGlucoseSlot');
+      const noteInput = document.getElementById('inputGlucoseNote');
+      const titleEl = document.getElementById('dlgGlucemiaTitle');
+      const submitBtn = document.getElementById('btnSubmitGlucoseModal');
+      const deleteBtn = document.getElementById('btnDeleteGlucoseModal');
+
+      if (id !== null && id !== undefined) {
+        const existing = (state.glucoseLogs || []).find(entry => Number(entry.id) === Number(id));
+        if (existing) {
+          idInput.value = String(existing.id);
+          valInput.value = existing.value;
+          dateInput.value = existing.date;
+          slotInput.value = existing.slot;
+          noteInput.value = existing.note || '';
+          titleEl.textContent = 'Editar Glucemia';
+          submitBtn.textContent = 'Guardar Cambios';
+          deleteBtn.classList.remove('hidden');
+          document.getElementById('dlgGlucemia').showModal();
+          return;
+        }
+      }
+
+      idInput.value = '';
+      valInput.value = '';
+      dateInput.value = formatNowGlucoseDate();
+      slotInput.value = 'En ayunas';
+      noteInput.value = '';
+      titleEl.textContent = 'Registrar Glucemia';
+      submitBtn.textContent = 'Guardar Medición';
+      deleteBtn.classList.add('hidden');
+      document.getElementById('dlgGlucemia').showModal();
+    }
+
+    function editarUltimaGlucemia() {
+      const logs = state.glucoseLogs || [];
+      if (logs.length > 0) {
+        abrirModalGlucemia(logs[0].id);
+      } else {
+        abrirModalGlucemia();
+      }
+    }
+
     function guardarGlucemia(e) {
       e.preventDefault();
+      const editId = document.getElementById('inputGlucoseId').value;
       const val = Number(document.getElementById('inputGlucoseVal').value);
+      const dateStr = document.getElementById('inputGlucoseDate').value.trim() || formatNowGlucoseDate();
       const slot = document.getElementById('inputGlucoseSlot').value;
       const note = document.getElementById('inputGlucoseNote').value.trim();
       if (!val) return;
 
-      const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-      const hoyNombre = dias[new Date().getDay()];
-      state.glucoseLogs.unshift({
-        date: `${hoyNombre} (${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })})`,
-        slot,
-        value: val,
-        note: note || 'Registro manual'
-      });
+      if (editId) {
+        const idx = state.glucoseLogs.findIndex(entry => Number(entry.id) === Number(editId));
+        if (idx !== -1) {
+          state.glucoseLogs[idx] = {
+            ...state.glucoseLogs[idx],
+            date: dateStr,
+            slot,
+            value: val,
+            note: note || 'Registro manual'
+          };
+        }
+      } else {
+        state.glucoseLogs.unshift({
+          id: Date.now(),
+          date: dateStr,
+          slot,
+          value: val,
+          note: note || 'Registro manual'
+        });
+      }
       saveState();
       renderSalud();
       document.getElementById('formGlucemia').reset();
       document.getElementById('dlgGlucemia').close();
     }
 
+    function eliminarGlucemia(id) {
+      state.glucoseLogs = (state.glucoseLogs || []).filter(entry => Number(entry.id) !== Number(id));
+      saveState();
+      renderSalud();
+    }
+
+    function eliminarGlucemiaDesdeModal() {
+      const editId = document.getElementById('inputGlucoseId').value;
+      if (!editId) return;
+      eliminarGlucemia(Number(editId));
+      document.getElementById('formGlucemia').reset();
+      document.getElementById('dlgGlucemia').close();
+    }
+
+    function limpiarHistorialGlucemia() {
+      if ((state.glucoseLogs || []).length === 0) return;
+      if (!confirm('¿Seguro que querés borrar todas las mediciones de glucemia?')) return;
+      state.glucoseLogs = [];
+      saveState();
+      renderSalud();
+    }
+
     function compartirReporteWhatsApp() {
-      const ultimas = state.glucoseLogs.slice(0, 5)
-        .map(l => `• ${l.date} [${l.slot}]: *${l.value} mg/dL* (${l.note || 'sin nota'})`)
-        .join('\n');
-      const avg = Math.round(state.glucoseLogs.reduce((a, b) => a + Number(b.value), 0) / state.glucoseLogs.length);
+      const logs = state.glucoseLogs || [];
+      const ultimas = logs.length > 0
+        ? logs.slice(0, 5).map(l => `• ${l.date} [${l.slot}]: *${l.value} mg/dL* (${l.note || 'sin nota'})`).join('\n')
+        : '• Sin mediciones registradas';
+      const avgText = logs.length > 0
+        ? `*${Math.round(logs.reduce((a, b) => a + Number(b.value), 0) / logs.length)} mg/dL*`
+        : 'Sin registros';
+      const schedules = state.pillSchedules || defaultState.pillSchedules;
       const texto = `*Mi Hub — Reporte Diabetes T2*\n` +
-        `• Pastillas: 05:00 AM (${state.pillNames.manana}) y 20:45 HS (${state.pillNames.noche})\n` +
-        `• Promedio reciente: *${avg} mg/dL*\n\n` +
+        `• Pastillas: ${schedules.mananaHeader} (${state.pillNames.manana}) y ${schedules.nocheHeader} (${state.pillNames.noche})\n` +
+        `• Promedio reciente: ${avgText}\n\n` +
         `*Últimas mediciones:*\n${ultimas}`;
       const phone = (state.waPhone || '').replace(/\D/g, '');
       const url = phone
