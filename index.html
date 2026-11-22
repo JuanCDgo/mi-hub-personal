@@ -71,6 +71,22 @@
       backdrop-filter: blur(4px);
     }
 
+    /* Subtle thin scrollbar for compact lists */
+    .thin-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .thin-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .thin-scroll::-webkit-scrollbar-thumb {
+      background: rgba(28, 29, 32, 0.18);
+      border-radius: 9999px;
+    }
+    .thin-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(28, 29, 32, 0.35);
+    }
+
     /* Print / PDF Medical Report clean layout */
     @media print {
       body {
@@ -382,21 +398,26 @@
                 </button>
               </div>
 
-              <!-- Interactive Platform Filter Pills -->
-              <div class="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Filtrar por plataforma">
-                <button type="button" onclick="filtrarPlataforma('ALL')" data-plat="ALL" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-charcoal-main text-white transition-all">En curso (6)</button>
-                <button type="button" onclick="filtrarPlataforma('Max')" data-plat="Max" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Max</button>
-                <button type="button" onclick="filtrarPlataforma('Disney+')" data-plat="Disney+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Disney+</button>
-                <button type="button" onclick="filtrarPlataforma('Netflix')" data-plat="Netflix" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Netflix</button>
-                <button type="button" onclick="filtrarPlataforma('Paramount+')" data-plat="Paramount+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Paramount+</button>
-                <button type="button" onclick="filtrarPlataforma('Prime Video')" data-plat="Prime Video" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Prime</button>
-                <button type="button" onclick="filtrarPlataforma('Apple TV+')" data-plat="Apple TV+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Apple TV+</button>
-                <button type="button" onclick="filtrarPlataforma('WATCHED')" data-plat="WATCHED" id="chipWatchedCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-loud-tint text-loud-red border border-loud-red/30 hover:bg-loud-red hover:text-white transition-all">Ya vistas (0)</button>
-                <button type="button" onclick="filtrarPlataforma('IGNORED')" data-plat="IGNORED" id="chipIgnoredCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text/80 border border-oat-border hover:bg-charcoal-main hover:text-white transition-all">No me interesa (0)</button>
+              <!-- Clean State Tabs + Platform Dropdown -->
+              <div class="flex items-center justify-between gap-2 flex-wrap" role="group" aria-label="Filtrar series">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <button type="button" onclick="filtrarPlataforma('ALL')" data-plat="ALL" id="chipEnCursoCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-charcoal-main text-white transition-all">En curso (6)</button>
+                  <button type="button" onclick="filtrarPlataforma('WATCHED')" data-plat="WATCHED" id="chipWatchedCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Ya vistas (0)</button>
+                  <button type="button" onclick="filtrarPlataforma('IGNORED')" data-plat="IGNORED" id="chipIgnoredCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text/80 hover:bg-charcoal-main hover:text-white transition-all">Descartadas (0)</button>
+                </div>
+                <select id="selectPlatFilter" onchange="filtrarPlataforma(this.value)" aria-label="Filtrar por plataforma" class="rounded-full bg-oat-subtle border border-oat-border px-2.5 py-1 text-[10px] font-bold uppercase text-charcoal-ink focus:outline-none focus:border-charcoal-main cursor-pointer">
+                  <option value="ALL">Todas las plataformas</option>
+                  <option value="Max">Max</option>
+                  <option value="Disney+">Disney+</option>
+                  <option value="Netflix">Netflix</option>
+                  <option value="Paramount+">Paramount+</option>
+                  <option value="Prime Video">Prime Video</option>
+                  <option value="Apple TV+">Apple TV+</option>
+                </select>
               </div>
 
               <!-- Continue Watching Dynamic List -->
-              <div id="watchlistContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+              <div id="watchlistContainer" class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1 thin-scroll">
                 <!-- Populated by JS -->
               </div>
             </div>
@@ -404,7 +425,7 @@
             <!-- 10% LOUD RED CTA: ¿QUÉ MIRO HOY? -->
             <button type="button" onclick="abrirQueMiroHoy()" class="w-full py-3 px-4 rounded-full bg-loud-red hover:bg-loud-dark active:scale-95 text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all">
               <span class="material-symbols-outlined text-[18px]">casino</span>
-              <span>🎲 ¿Qué miro hoy? (Recomendar en mis 6)</span>
+              <span>¿Qué miro hoy? (Recomendar en mis 6)</span>
             </button>
           </section>
 
@@ -1650,8 +1671,13 @@
 
     function filtrarPlataforma(plat) {
       activePlatformFilter = plat;
+      const activeTab = (plat === 'WATCHED' || plat === 'IGNORED') ? plat : 'ALL';
+      const selectEl = document.getElementById('selectPlatFilter');
+      if (selectEl) {
+        selectEl.value = (plat === 'WATCHED' || plat === 'IGNORED') ? 'ALL' : plat;
+      }
       document.querySelectorAll('.plat-chip').forEach(btn => {
-        if (btn.dataset.plat === plat) {
+        if (btn.dataset.plat === activeTab) {
           btn.className = 'plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-charcoal-main text-white transition-all';
         } else {
           btn.className = 'plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all';
@@ -1660,15 +1686,33 @@
       renderSeries();
     }
 
+    function toggleSerieMenu(id, event) {
+      if (event) event.stopPropagation();
+      const targetId = `serieMenu-${id}`;
+      document.querySelectorAll('.serie-action-menu').forEach(el => {
+        if (el.id !== targetId) el.classList.add('hidden');
+      });
+      const menu = document.getElementById(targetId);
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.serie-action-menu').forEach(el => el.classList.add('hidden'));
+    });
+
     function renderSeries() {
       const container = document.getElementById('watchlistContainer');
+      const enCursoChip = document.getElementById('chipEnCursoCount');
+      if (enCursoChip) {
+        enCursoChip.textContent = `En curso (${(state.watchlist || []).length})`;
+      }
       const watchedChip = document.getElementById('chipWatchedCount');
       if (watchedChip) {
         watchedChip.textContent = `Ya vistas (${(state.watchedSeries || []).length})`;
       }
       const ignoredChip = document.getElementById('chipIgnoredCount');
       if (ignoredChip) {
-        ignoredChip.textContent = `No me interesa (${(state.ignoredSeries || []).length})`;
+        ignoredChip.textContent = `Descartadas (${(state.ignoredSeries || []).length})`;
       }
 
       if (activePlatformFilter === 'IGNORED') {
@@ -1744,7 +1788,7 @@
         : '';
 
       container.innerHTML = visibleItems.map(item => `
-        <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex items-center justify-between gap-3">
+        <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex items-center justify-between gap-3 relative">
           <div class="flex flex-col min-w-0 flex-1">
             <div class="flex items-center gap-1.5 whitespace-nowrap">
               <span class="px-2 py-0.5 rounded bg-charcoal-main text-white text-[9px] font-bold uppercase shrink-0">${escapeHtml(item.platform)}</span>
@@ -1752,24 +1796,28 @@
             </div>
             <h4 class="text-sm font-bold text-charcoal-ink truncate mt-1">${escapeHtml(item.title)}</h4>
           </div>
-          <div class="flex flex-col items-end gap-1.5 shrink-0">
-            <div class="flex items-center gap-1">
-              <button type="button" onclick="retrocederCapitulo(${item.id})" class="w-7 h-7 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-xs font-bold flex items-center justify-center transition-colors" title="Restar 1 capítulo">
-                -
+          <div class="flex items-center gap-1 shrink-0 relative">
+            <button type="button" onclick="retrocederCapitulo(${item.id})" class="w-7 h-7 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-xs font-bold flex items-center justify-center transition-colors" title="Restar 1 capítulo">
+              -
+            </button>
+            <button type="button" onclick="avanzarCapitulo(${item.id})" class="px-2.5 py-1 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-[10px] font-bold uppercase transition-colors" title="Sumar 1 capítulo visto">
+              +1
+            </button>
+            <button type="button" onclick="toggleSerieMenu(${item.id}, event)" aria-label="Más opciones" title="Más opciones" class="w-7 h-7 rounded-lg bg-oat-subtle hover:bg-charcoal-main hover:text-white text-charcoal-ink flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+            </button>
+            <div id="serieMenu-${item.id}" onclick="event.stopPropagation()" class="serie-action-menu hidden absolute right-0 top-9 z-30 w-40 rounded-xl bg-oat-card border border-oat-border shadow-lg p-1 flex flex-col gap-0.5">
+              <button type="button" onclick="marcarYaLaVi(${item.id})" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-oat-subtle text-charcoal-ink text-[11px] font-bold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px]">done_all</span>
+                <span>Ya la vi</span>
               </button>
-              <button type="button" onclick="avanzarCapitulo(${item.id})" class="px-2.5 py-1 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-[10px] font-bold uppercase transition-colors" title="Sumar 1 capítulo visto">
-                +1 Cap
+              <button type="button" onclick="noMeInteresaSerie(${item.id})" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-loud-tint hover:text-loud-red text-charcoal-text text-[11px] font-bold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px]">block</span>
+                <span>No me interesa</span>
               </button>
-              <button type="button" onclick="eliminarSerie(${item.id})" aria-label="Quitar serie" title="Quitar de la lista" class="w-7 h-7 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text/70 text-xs font-bold flex items-center justify-center transition-colors">
-                ✕
-              </button>
-            </div>
-            <div class="flex items-center gap-1">
-              <button type="button" onclick="marcarYaLaVi(${item.id})" class="px-2.5 py-1 rounded-lg bg-charcoal-main hover:bg-loud-red text-white text-[10px] font-bold uppercase transition-colors" title="Marcar como ya vista para recomendar parecidas">
-                Ya la vi ✓
-              </button>
-              <button type="button" onclick="noMeInteresaSerie(${item.id})" class="px-2.5 py-1 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text text-[10px] font-bold uppercase transition-colors" title="No me interesa (quitar y no recomendar)">
-                No me interesa
+              <button type="button" onclick="eliminarSerie(${item.id})" class="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-loud-tint hover:text-loud-red text-charcoal-text/80 text-[11px] font-bold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[14px]">close</span>
+                <span>Quitar</span>
               </button>
             </div>
           </div>
