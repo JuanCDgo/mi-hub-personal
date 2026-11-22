@@ -392,6 +392,7 @@
                 <button type="button" onclick="filtrarPlataforma('Prime Video')" data-plat="Prime Video" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Prime</button>
                 <button type="button" onclick="filtrarPlataforma('Apple TV+')" data-plat="Apple TV+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Apple TV+</button>
                 <button type="button" onclick="filtrarPlataforma('WATCHED')" data-plat="WATCHED" id="chipWatchedCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-loud-tint text-loud-red border border-loud-red/30 hover:bg-loud-red hover:text-white transition-all">Ya vistas (0)</button>
+                <button type="button" onclick="filtrarPlataforma('IGNORED')" data-plat="IGNORED" id="chipIgnoredCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text/80 border border-oat-border hover:bg-charcoal-main hover:text-white transition-all">No me interesa (0)</button>
               </div>
 
               <!-- Continue Watching Dynamic List -->
@@ -700,7 +701,11 @@
           <span class="material-symbols-outlined text-[16px]">casino</span>
           <span>Tirar de nuevo</span>
         </button>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="marcarRecomendadaNoMeInteresa()" class="px-3.5 py-2.5 rounded-full bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">block</span>
+            <span>No me interesa</span>
+          </button>
           <button type="button" onclick="marcarRecomendadaYaLaVi()" class="px-4 py-2.5 rounded-full bg-charcoal-main hover:bg-charcoal-ink text-oat-card text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
             <span class="material-symbols-outlined text-[16px]">done_all</span>
             <span>Ya la vi</span>
@@ -990,6 +995,7 @@
         { id: 4, title: 'Fallout', platform: 'Prime Video', season: 1, ep: 6, note: '4K HDR' }
       ],
       watchedSeries: [],
+      ignoredSeries: [],
       spotifyEmbedUrl: 'https://open.spotify.com/embed/artist/2aaLAng2L2aWD2FClzwiep?utm_source=generator&theme=0',
       riverMatchIndex: 0,
       metalBandIndex: 0
@@ -1653,6 +1659,37 @@
       if (watchedChip) {
         watchedChip.textContent = `Ya vistas (${(state.watchedSeries || []).length})`;
       }
+      const ignoredChip = document.getElementById('chipIgnoredCount');
+      if (ignoredChip) {
+        ignoredChip.textContent = `No me interesa (${(state.ignoredSeries || []).length})`;
+      }
+
+      if (activePlatformFilter === 'IGNORED') {
+        const ignored = state.ignoredSeries || [];
+        if (ignored.length === 0) {
+          container.innerHTML = `
+            <div class="p-4 rounded-xl bg-oat-canvas border border-oat-border text-center text-xs text-charcoal-text/70">
+              No marcaste ninguna serie como <strong>"No me interesa"</strong>. Cuando lo hagas, no te las volverá a recomendar ni agregar automáticamente.
+            </div>
+          `;
+          return;
+        }
+        container.innerHTML = ignored.map(item => `
+          <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex items-center justify-between gap-3">
+            <div class="flex flex-col min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded bg-charcoal-main text-white text-[9px] font-bold uppercase">${escapeHtml(item.platform || 'Serie')}</span>
+                <span class="text-[10px] font-bold text-charcoal-text/70 uppercase">Descartada</span>
+              </div>
+              <h4 class="text-sm font-bold text-charcoal-ink truncate mt-1">${escapeHtml(item.title)}</h4>
+            </div>
+            <button type="button" onclick="restaurarSerieIgnorada(${Number(item.id)})" class="px-2.5 py-1.5 rounded-lg bg-oat-subtle hover:bg-charcoal-main hover:text-white text-charcoal-ink text-[10px] font-bold uppercase transition-colors shrink-0">
+              Volver a lista
+            </button>
+          </div>
+        `).join('');
+        return;
+      }
 
       if (activePlatformFilter === 'WATCHED') {
         const watched = state.watchedSeries || [];
@@ -1718,6 +1755,9 @@
             <button type="button" onclick="marcarYaLaVi(${item.id})" class="px-2.5 py-1.5 rounded-lg bg-charcoal-main hover:bg-loud-red text-white text-[10px] font-bold uppercase transition-colors" title="Marcar como ya vista para recomendar parecidas">
               Ya la vi ✓
             </button>
+            <button type="button" onclick="noMeInteresaSerie(${item.id})" class="px-2 py-1.5 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text text-[10px] font-bold uppercase transition-colors" title="No me interesa (quitar y no recomendar)">
+              No me interesa
+            </button>
             <button type="button" onclick="eliminarSerie(${item.id})" aria-label="Quitar serie" class="w-7 h-7 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text/70 text-xs font-bold flex items-center justify-center transition-colors">
               ✕
             </button>
@@ -1730,6 +1770,7 @@
       const watched = state.watchedSeries || [];
       const inList = (title) => state.watchlist.some(s => s.title.toLowerCase() === title.toLowerCase());
       const alreadySeen = (title) => watched.some(w => w.title.toLowerCase() === title.toLowerCase());
+      const isIgnored = (title) => esSerieIgnorada(title);
 
       // Try TMDB live first if connected
       if (state.tmdbKey) {
@@ -1739,7 +1780,7 @@
           const res = await fetch(url);
           if (res.ok) {
             const data = await res.json();
-            const cand = (data.results || []).find(s => !inList(s.name) && !alreadySeen(s.name));
+            const cand = (data.results || []).find(s => !inList(s.name) && !alreadySeen(s.name) && !isIgnored(s.name));
             if (cand) {
               const plat = await detectarPlataformaAR(cand.id, 'ALL');
               state.watchlist.push({
@@ -1760,8 +1801,8 @@
       }
 
       // Offline fallback: never leave the card empty
-      const offlineCand = catalogoRecomendacionesAR.find(s => !inList(s.title) && !alreadySeen(s.title))
-        || catalogoRecomendacionesAR.find(s => !inList(s.title));
+      const offlineCand = catalogoRecomendacionesAR.find(s => !inList(s.title) && !alreadySeen(s.title) && !isIgnored(s.title))
+        || catalogoRecomendacionesAR.find(s => !inList(s.title) && !isIgnored(s.title));
       if (offlineCand) {
         state.watchlist.push({
           id: Date.now(),
@@ -1949,6 +1990,46 @@
       document.getElementById('dlgQueMiro').showModal();
     }
 
+    function esSerieIgnorada(title) {
+      const ignored = state.ignoredSeries || [];
+      return ignored.some(i => i.title.toLowerCase() === String(title || '').toLowerCase());
+    }
+
+    function noMeInteresaSerie(id) {
+      const idx = state.watchlist.findIndex(s => s.id === id);
+      if (idx === -1) return;
+      const [item] = state.watchlist.splice(idx, 1);
+      if (!state.ignoredSeries) state.ignoredSeries = [];
+      if (!esSerieIgnorada(item.title)) {
+        state.ignoredSeries.unshift({
+          id: Date.now(),
+          tmdbId: item.tmdbId || null,
+          title: item.title,
+          platform: item.platform
+        });
+      }
+      saveState();
+      renderSeries();
+      rellenarRecomendacionEnLista();
+    }
+
+    function restaurarSerieIgnorada(id) {
+      const idx = (state.ignoredSeries || []).findIndex(s => s.id === id);
+      if (idx === -1) return;
+      const [item] = state.ignoredSeries.splice(idx, 1);
+      state.watchlist.unshift({
+        id: Date.now(),
+        tmdbId: item.tmdbId || null,
+        title: item.title,
+        platform: item.platform || 'Max',
+        season: 1,
+        ep: 1
+      });
+      activePlatformFilter = 'ALL';
+      saveState();
+      renderSeries();
+    }
+
     function esSerieYaVista(title, tmdbSeasons) {
       const watched = state.watchedSeries || [];
       const found = watched.find(w => w.title.toLowerCase() === title.toLowerCase());
@@ -2004,7 +2085,7 @@
           const res = await fetch(url);
           if (res.ok) {
             const data = await res.json();
-            let list = (data.results || []).filter(s => s.overview && s.overview.length > 10 && !esSerieYaVista(s.name));
+            let list = (data.results || []).filter(s => s.overview && s.overview.length > 10 && !esSerieYaVista(s.name) && !esSerieIgnorada(s.name));
             if (list.length > 0) {
               const pick = list[Math.floor(Math.random() * list.length)];
               let seasonsCount = 1;
@@ -2050,10 +2131,13 @@
       let pool = catalogoRecomendacionesAR.filter(item => {
         const matchPlat = plat === 'ALL' || item.platform === plat;
         const matchMood = mood === 'ALL' || item.mood === mood;
-        return matchPlat && matchMood && !esSerieYaVista(item.title);
+        return matchPlat && matchMood && !esSerieYaVista(item.title) && !esSerieIgnorada(item.title);
       });
       if (pool.length === 0) {
-        pool = catalogoRecomendacionesAR.filter(item => (plat === 'ALL' || item.platform === plat) && !esSerieYaVista(item.title));
+        pool = catalogoRecomendacionesAR.filter(item => (plat === 'ALL' || item.platform === plat) && !esSerieYaVista(item.title) && !esSerieIgnorada(item.title));
+      }
+      if (pool.length === 0) {
+        pool = catalogoRecomendacionesAR.filter(item => !esSerieIgnorada(item.title));
       }
       if (pool.length === 0) pool = catalogoRecomendacionesAR;
       const candidates = pool.length > 1 && currentRecSerie
@@ -2066,6 +2150,22 @@
       document.getElementById('recTitle').textContent = currentRecSerie.title;
       document.getElementById('recGenre').textContent = currentRecSerie.genre;
       document.getElementById('recSynopsis').textContent = currentRecSerie.synopsis;
+    }
+
+    function marcarRecomendadaNoMeInteresa() {
+      if (!currentRecSerie) return;
+      if (!state.ignoredSeries) state.ignoredSeries = [];
+      if (!esSerieIgnorada(currentRecSerie.title)) {
+        state.ignoredSeries.unshift({
+          id: Date.now(),
+          tmdbId: currentRecSerie.tmdbId || null,
+          title: currentRecSerie.title,
+          platform: currentRecSerie.platform
+        });
+        saveState();
+        renderSeries();
+      }
+      sortearSerie();
     }
 
     function marcarRecomendadaYaLaVi() {
