@@ -1204,8 +1204,8 @@
       const box = document.getElementById('glucoseChartContainer');
       if (!box) return;
       const points = [...logs].slice(0, 7).reverse();
-      if (points.length < 2) {
-        box.innerHTML = '<span class="text-[10px] text-charcoal-muted">Cargá 2+ mediciones para ver tendencia</span>';
+      if (points.length === 0) {
+        box.innerHTML = '<span class="text-[10px] text-charcoal-muted">Sin mediciones aún</span>';
         return;
       }
       const vals = points.map(p => Number(p.value));
@@ -1218,7 +1218,9 @@
       const span = Math.max(1, maxV - minV);
 
       const coords = points.map((p, i) => {
-        const x = padX + (i * (w - padX * 2)) / (points.length - 1);
+        const x = points.length === 1
+          ? w / 2
+          : padX + (i * (w - padX * 2)) / (points.length - 1);
         const y = h - padY - ((Number(p.value) - minV) / span) * (h - padY * 2);
         return { x, y, v: Number(p.value) };
       });
@@ -1228,14 +1230,19 @@
       const y70 = h - padY - ((70 - minV) / span) * (h - padY * 2);
       const polyPoints = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(' ');
 
+      const singleGuide = points.length === 1
+        ? `<line x1="${padX}" y1="${coords[0].y.toFixed(1)}" x2="${w - padX}" y2="${coords[0].y.toFixed(1)}" stroke="rgba(250,247,242,0.3)" stroke-width="1.2" stroke-dasharray="3 3"></line>
+           <text x="${(coords[0].x + 8).toFixed(1)}" y="${Math.max(11, coords[0].y - 5).toFixed(1)}" fill="#FAF7F2" font-size="9" font-weight="700">${coords[0].v}</text>`
+        : `<polyline fill="none" stroke="#FAF7F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${polyPoints}"></polyline>`;
+
       box.innerHTML = `
         <svg viewBox="0 0 ${w} ${h}" class="w-full h-full overflow-visible" aria-label="Tendencia histórica de glucemia">
           <rect x="${padX}" y="${Math.max(0, y130).toFixed(1)}" width="${w - padX * 2}" height="${Math.max(4, y70 - y130).toFixed(1)}" fill="rgba(250,247,242,0.08)" rx="3"></rect>
-          <polyline fill="none" stroke="#FAF7F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${polyPoints}"></polyline>
+          ${singleGuide}
           ${coords.map((c, idx) => {
             const isLast = idx === coords.length - 1;
             const color = c.v > 140 ? '#E53935' : (isLast ? '#E53935' : '#FAF7F2');
-            return `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 3.5 : 2.5}" fill="${color}"></circle>`;
+            return `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 4 : 2.5}" fill="${color}"></circle>`;
           }).join('')}
         </svg>
       `;
@@ -1738,29 +1745,33 @@
 
       container.innerHTML = visibleItems.map(item => `
         <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex items-center justify-between gap-3">
-          <div class="flex flex-col min-w-0">
-            <div class="flex items-center gap-1.5">
-              <span class="px-2 py-0.5 rounded bg-charcoal-main text-white text-[9px] font-bold uppercase">${item.platform}</span>
-              <span class="text-[10px] font-bold text-loud-red uppercase tabular-nums">T${item.season} • E${String(item.ep).padStart(2, '0')}</span>
+          <div class="flex flex-col min-w-0 flex-1">
+            <div class="flex items-center gap-1.5 whitespace-nowrap">
+              <span class="px-2 py-0.5 rounded bg-charcoal-main text-white text-[9px] font-bold uppercase shrink-0">${escapeHtml(item.platform)}</span>
+              <span class="text-[10px] font-bold text-loud-red uppercase tabular-nums shrink-0">T${item.season} • E${String(item.ep).padStart(2, '0')}</span>
             </div>
-            <h4 class="text-sm font-bold text-charcoal-ink truncate mt-1">${item.title}</h4>
+            <h4 class="text-sm font-bold text-charcoal-ink truncate mt-1">${escapeHtml(item.title)}</h4>
           </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="retrocederCapitulo(${item.id})" class="w-7 h-7 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-xs font-bold flex items-center justify-center transition-colors" title="Restar 1 capítulo">
-              -
-            </button>
-            <button type="button" onclick="avanzarCapitulo(${item.id})" class="px-2.5 py-1.5 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-[10px] font-bold uppercase transition-colors" title="Sumar 1 capítulo visto">
-              +1 Cap
-            </button>
-            <button type="button" onclick="marcarYaLaVi(${item.id})" class="px-2.5 py-1.5 rounded-lg bg-charcoal-main hover:bg-loud-red text-white text-[10px] font-bold uppercase transition-colors" title="Marcar como ya vista para recomendar parecidas">
-              Ya la vi ✓
-            </button>
-            <button type="button" onclick="noMeInteresaSerie(${item.id})" class="px-2 py-1.5 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text text-[10px] font-bold uppercase transition-colors" title="No me interesa (quitar y no recomendar)">
-              No me interesa
-            </button>
-            <button type="button" onclick="eliminarSerie(${item.id})" aria-label="Quitar serie" class="w-7 h-7 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text/70 text-xs font-bold flex items-center justify-center transition-colors">
-              ✕
-            </button>
+          <div class="flex flex-col items-end gap-1.5 shrink-0">
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="retrocederCapitulo(${item.id})" class="w-7 h-7 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-xs font-bold flex items-center justify-center transition-colors" title="Restar 1 capítulo">
+                -
+              </button>
+              <button type="button" onclick="avanzarCapitulo(${item.id})" class="px-2.5 py-1 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-[10px] font-bold uppercase transition-colors" title="Sumar 1 capítulo visto">
+                +1 Cap
+              </button>
+              <button type="button" onclick="eliminarSerie(${item.id})" aria-label="Quitar serie" title="Quitar de la lista" class="w-7 h-7 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text/70 text-xs font-bold flex items-center justify-center transition-colors">
+                ✕
+              </button>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="marcarYaLaVi(${item.id})" class="px-2.5 py-1 rounded-lg bg-charcoal-main hover:bg-loud-red text-white text-[10px] font-bold uppercase transition-colors" title="Marcar como ya vista para recomendar parecidas">
+                Ya la vi ✓
+              </button>
+              <button type="button" onclick="noMeInteresaSerie(${item.id})" class="px-2.5 py-1 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text text-[10px] font-bold uppercase transition-colors" title="No me interesa (quitar y no recomendar)">
+                No me interesa
+              </button>
+            </div>
           </div>
         </div>
       `).join('') + moreNotice;
