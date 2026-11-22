@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#222327" />
+  <title>Mi Hub. — Todo en su lugar</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            oat: {
+              canvas: '#F4EFE6',
+              card: '#FAF7F2',
+              subtle: '#ECE7DC',
+              border: '#E2DCD0',
+            },
+            charcoal: {
+              ink: '#18191C',
+              main: '#222327',
+              tile: '#2E3036',
+              border: '#3E4048',
+              muted: '#9B9DA3',
+              text: '#1C1D21'
+            },
+            loud: {
+              red: '#E53935',
+              dark: '#C62828',
+              tint: '#FDE8E7'
+            }
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Space Grotesk', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    };
+    }
+  </script>
+  <style>
+    /* Modern Web Guidance: improve-text-layout-and-legibility */
+    h1, h2, h3, h4 {
+      text-wrap: balance;
+    }
+    p, li, blockquote {
+      text-wrap: pretty;
+    }
+
+    /* Tabular numbers for metrics, clocks and countdowns */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Modern Web Guidance: dialog & prevent-page-scroll-under-modal-dialog */
+    dialog:modal {
+      overscroll-behavior: contain;
+    }
+    dialog::backdrop {
+      overflow: hidden;
+      overscroll-behavior: contain;
+      background-color: rgba(24, 25, 28, 0.65);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Print / PDF Medical Report clean layout */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-oat-canvas font-sans text-charcoal-text antialiased min-h-screen pb-24 xl:pb-8 selection:bg-loud-red selection:text-white">
+
+  <!-- TOP HEADER (Mobile & Desktop) -->
+  <header class="sticky top-0 z-40 bg-oat-canvas/90 backdrop-blur-md border-b border-oat-border no-print">
+    <div class="max-w-[1440px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between gap-4">
+      <!-- Brand -->
+      <div class="flex items-center gap-6">
+        <div class="flex flex-col">
+          <div class="flex items-baseline gap-1.5">
+            <h1 class="font-serif text-2xl md:text-3xl font-semibold tracking-tight text-charcoal-ink">Mi Hub.</h1>
+            <span class="w-2 h-2 rounded-full bg-loud-red inline-block"></span>
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-widest text-charcoal-muted">Todo en su lugar.</span>
+        </div>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden xl:flex items-center gap-1 p-1 bg-oat-subtle rounded-xl border border-oat-border" aria-label="Secciones principales">
+          <button type="button" onclick="filtrarSeccion('all')" data-nav="all" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-bold bg-charcoal-ink text-white shadow-sm transition-all">Inicio</button>
+          <button type="button" onclick="filtrarSeccion('salud')" data-nav="salud" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold text-charcoal-text/80 hover:text-charcoal-ink transition-all">Salud T2</button>
+          <button type="button" onclick="filtrarSeccion('series')" data-nav="series" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold text-charcoal-text/80 hover:text-charcoal-ink transition-all">Series AR</button>
+          <button type="button" onclick="filtrarSeccion('river')" data-nav="river" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold text-charcoal-text/80 hover:text-charcoal-ink transition-all">River Plate</button>
+          <button type="button" onclick="filtrarSeccion('metal')" data-nav="metal" class="nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold text-charcoal-text/80 hover:text-charcoal-ink transition-all">Prog Metal</button>
+        </nav>
+      </div>
+
+      <!-- Right Status: WhatsApp & Profile -->
+      <div class="flex items-center gap-2.5">
+        <button type="button" onclick="document.getElementById('dlgWhatsapp').showModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-oat-card border border-oat-border hover:border-charcoal-main transition-all shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-loud-red animate-pulse"></span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-charcoal-ink">WhatsApp Alertas:</span>
+          <span id="headerWaStatus" class="text-xs font-semibold text-charcoal-main hidden sm:inline">Activo (05:00 / 20:45)</span>
+        </button>
+        <button type="button" onclick="document.getElementById('dlgWhatsapp').showModal()" aria-label="Configurar alertas y perfil" class="w-9 h-9 rounded-full bg-charcoal-main text-oat-card flex items-center justify-center hover:bg-charcoal-ink transition-colors">
+          <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BENTO GRID COCKPIT -->
+  <main class="max-w-[1440px] mx-auto px-4 md:px-8 pt-5 no-print">
+    <div class="grid grid-cols-12 gap-4 md:gap-5 items-stretch">
+
+      <!-- ================================================================= -->
+      <!-- BENTO 1 (LEFT HERO COLUMN - 30% CHARCOAL INK): SALUD & DIABETES T2 -->
+      <!-- ================================================================= -->
+      <section id="sec-salud" class="bento-section col-span-12 xl:col-span-5 bg-charcoal-main text-oat-card rounded-[20px] p-5 md:p-6 shadow-md flex flex-col justify-between relative overflow-hidden">
+        <div class="flex flex-col gap-4 relative z-10">
+          <!-- Top Status Row -->
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-oat-card"></span>
+              <span class="text-[11px] font-bold uppercase tracking-widest text-charcoal-muted">Salud &amp; Diabetes T2</span>
+            </div>
+            <span id="esquemaDiaBadge" class="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-charcoal-tile text-oat-card border border-charcoal-border">
+              Esquema Rotativo
+            </span>
+          </div>
+
+          <!-- Title -->
+          <div>
+            <h2 class="font-serif text-3xl md:text-4xl font-semibold text-oat-card tracking-tight">Pastillas &amp; Glucemia</h2>
+            <p class="text-xs text-charcoal-muted mt-0.5">Tus nuevos horarios de medicación y control día de por medio</p>
+          </div>
+
+          <!-- Two Medication Cards (05:00 AM & 20:45 HS) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Dose 1: 05:00 AM -->
+            <div id="cardDosisManana" class="bg-charcoal-tile rounded-2xl p-4 border border-white/10 flex flex-col justify-between gap-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-charcoal-muted tabular-nums">05:00 AM • Mañana</span>
+                <span id="badgeManana" class="px-2.5 py-0.5 rounded-full bg-oat-card text-charcoal-main text-[10px] font-bold uppercase tracking-wider">✓ Tomada</span>
+              </div>
+              <div>
+                <p id="nombrePastillaManana" class="text-base font-bold text-oat-card">Pastilla Mañana</p>
+                <p class="text-xs text-charcoal-muted">Horario fijo • 05:00 hs</p>
+              </div>
+              <button type="button" id="btnToggleManana" onclick="togglePastilla('manana')" class="w-full py-1.5 px-3 rounded-full bg-charcoal-main/70 hover:bg-charcoal-ink text-oat-card/90 text-[11px] font-bold uppercase tracking-wider border border-white/15 transition-all">
+                Desmarcar
+              </button>
+            </div>
+
+            <!-- Dose 2: 20:45 HS (Antes de cenar) -->
+            <div id="cardDosisNoche" class="bg-charcoal-tile rounded-2xl p-4 border border-loud-red/40 flex flex-col justify-between gap-3">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                  <span id="dotNoche" class="w-2 h-2 rounded-full bg-loud-red animate-pulse"></span>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-oat-card tabular-nums">20:45 HS • Pre-Cena</span>
+                </div>
+                <span id="badgeNoche" class="text-[10px] font-bold uppercase tracking-wider text-loud-red bg-loud-red/15 px-2 py-0.5 rounded-full">Pendiente</span>
+              </div>
+              <div>
+                <p id="nombrePastillaNoche" class="text-base font-bold text-oat-card">Pastilla Pre-Cena</p>
+                <p class="text-xs text-charcoal-muted">Antes de las 21:00 hs</p>
+              </div>
+              <!-- 10% LOUD RED CTA -->
+              <button type="button" id="btnToggleNoche" onclick="togglePastilla('noche')" class="w-full py-2 px-3 rounded-full bg-loud-red hover:bg-loud-dark active:scale-95 text-white text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all">
+                <span class="material-symbols-outlined text-[15px]">check_circle</span>
+                <span>Marcar Tomada</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Smart Rotating Glucose Tracker Card -->
+          <div class="bg-charcoal-tile rounded-2xl p-4 border border-white/10 flex flex-col gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-oat-card text-[18px]">bloodtype</span>
+                <span class="text-[11px] font-bold uppercase tracking-widest text-oat-card">Nivel Glucémico</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="document.getElementById('dlgGlucemia').showModal()" class="px-3 py-1 rounded-full bg-oat-card text-charcoal-ink hover:bg-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all active:scale-95">
+                  <span class="material-symbols-outlined text-[14px]">add</span>
+                  <span>Cargar</span>
+                </button>
+                <button type="button" onclick="document.getElementById('dlgHistorialSalud').showModal()" class="text-[11px] font-bold uppercase tracking-wider text-charcoal-muted hover:text-oat-card underline underline-offset-4">
+                  Historial / PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Giant Metric Display + Historical Trend Chart -->
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div class="flex items-baseline gap-3">
+                <span id="lastGlucoseValue" class="font-serif text-5xl font-semibold text-oat-card tabular-nums leading-none">114</span>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-oat-card">mg/dL</span>
+                  <span id="lastGlucoseContext" class="text-xs text-charcoal-muted">(Última: En ayunas • Rango 70-130)</span>
+                </div>
+              </div>
+              <div id="glucoseChartContainer" class="flex-1 min-w-[180px] max-w-[260px] h-16 bg-charcoal-main/60 rounded-xl border border-white/10 p-1.5 flex items-center justify-center">
+                <!-- Populated dynamically with SVG chart -->
+              </div>
+            </div>
+
+            <!-- Next Measurement Smart Banner -->
+            <div class="p-3 rounded-xl bg-charcoal-main/80 border border-white/10 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-loud-red text-[18px]">schedule</span>
+                <span class="text-xs font-semibold text-oat-card">Próxima medición sugerida:</span>
+              </div>
+              <span id="nextGlucoseSlot" class="text-[11px] font-bold uppercase tracking-wider text-oat-card bg-white/10 px-2.5 py-1 rounded-md">
+                Viernes 23:00 hs (2h Post-Cena)
+              </span>
+            </div>
+
+            <!-- Weekly Rhythm Strip (Día de por medio + Viernes/Sábado noche) -->
+            <div class="pt-2 border-t border-white/10">
+              <p class="text-xs text-charcoal-muted mb-2">
+                <strong class="text-oat-card">Tu ritmo:</strong> Día por medio (Ayunas / Pre-almuerzo / Post-almuerzo) + <span class="text-oat-card underline decoration-loud-red">Viernes o Sábado 2 hs post-cena</span>.
+              </p>
+              <div id="weeklyGlucoseStrip" class="grid grid-cols-4 gap-2">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-charcoal-muted relative z-10">
+          <button type="button" onclick="compartirReporteWhatsApp()" class="hover:text-oat-card flex items-center gap-1 font-semibold transition-colors">
+            <span class="material-symbols-outlined text-[15px]">share</span>
+            <span>Enviar resumen por WhatsApp</span>
+          </button>
+          <span id="avgGlucoseBadge" class="text-oat-card font-semibold tabular-nums">Prom: 112 mg/dL</span>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- RIGHT AREA (7 COLS ON DESKTOP): RIVER + SERIES AR + PROG METAL    -->
+      <!-- ================================================================= -->
+      <div class="col-span-12 xl:col-span-7 flex flex-col gap-4 md:gap-5 justify-between">
+
+        <!-- =============================================================== -->
+        <!-- BENTO 2: RIVER PLATE (60% OAT MILK + 10% LOUD RIVER RED SASH)   -->
+        <!-- =============================================================== -->
+        <section id="sec-river" class="bento-section bg-oat-card rounded-[20px] p-5 md:p-6 border border-oat-border shadow-sm relative overflow-hidden">
+          <!-- Iconic River Plate Diagonal Red Sash -->
+          <div class="absolute -right-12 -top-12 w-36 h-36 bg-loud-red rotate-45 pointer-events-none flex items-end justify-center pb-2 shadow-sm">
+            <span class="text-white font-black tracking-widest text-[10px] uppercase">CARP</span>
+          </div>
+
+          <div class="flex flex-col gap-4 relative z-10">
+            <!-- Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pr-12">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-loud-red"></span>
+                <span class="text-[11px] font-bold uppercase tracking-widest text-loud-red">River Plate • Liga Profesional</span>
+                <span id="riverMatchRound" class="px-2 py-0.5 rounded bg-oat-subtle text-charcoal-text text-[11px] font-bold uppercase">Próximo Partido</span>
+              </div>
+              <span id="riverMatchTv" class="px-3 py-0.5 rounded-full bg-oat-canvas text-charcoal-ink text-[11px] font-bold uppercase border border-oat-border">
+                ESPN Premium • Pack Fútbol
+              </span>
+            </div>
+
+            <!-- Match & Countdown Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+              <div class="md:col-span-7 flex flex-col">
+                <h3 id="riverMatchTitle" class="font-serif text-2xl md:text-3xl font-semibold text-charcoal-ink tracking-tight">
+                  River Plate vs. Independiente
+                </h3>
+                <p id="riverMatchMeta" class="text-sm text-charcoal-text/80 mt-0.5 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] text-loud-red">location_on</span>
+                  <span>Estadio Mâs Monumental • Domingo 19:15 hs (AR)</span>
+                </p>
+
+                <!-- Live Tabular Countdown -->
+                <div class="flex items-center gap-2.5 mt-4 tabular-nums">
+                  <div class="bg-oat-subtle border border-oat-border rounded-xl px-3.5 py-2 flex flex-col items-center min-w-[64px]">
+                    <span id="cdDays" class="text-2xl font-bold text-charcoal-ink">01</span>
+                    <span class="text-[10px] font-bold uppercase text-charcoal-text/70">Días</span>
+                  </div>
+                  <span class="text-xl font-bold text-charcoal-muted">:</span>
+                  <div class="bg-oat-subtle border border-oat-border rounded-xl px-3.5 py-2 flex flex-col items-center min-w-[64px]">
+                    <span id="cdHours" class="text-2xl font-bold text-charcoal-ink">18</span>
+                    <span class="text-[10px] font-bold uppercase text-charcoal-text/70">Horas</span>
+                  </div>
+                  <span class="text-xl font-bold text-charcoal-muted">:</span>
+                  <div class="bg-loud-tint border border-loud-red/30 rounded-xl px-3.5 py-2 flex flex-col items-center min-w-[64px]">
+                    <span id="cdMins" class="text-2xl font-bold text-loud-red">30</span>
+                    <span class="text-[10px] font-bold uppercase text-loud-red">Min</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Monumental Atmosphere Card & Fixture Switcher -->
+              <div class="md:col-span-5 flex flex-col gap-2">
+                <div class="relative h-28 rounded-xl overflow-hidden border border-oat-border bg-charcoal-main flex flex-col justify-between p-3 text-white" style="background-image: linear-gradient(135deg, rgba(24,25,28,0.88) 0%, rgba(229,57,53,0.75) 100%);">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold uppercase tracking-widest bg-white/15 px-2 py-0.5 rounded-full">Mâs Monumental</span>
+                    <span id="riverLiveBadge" class="text-[10px] font-bold uppercase tracking-wider bg-white/15 px-2 py-0.5 rounded-full">Conectando ESPN...</span>
+                  </div>
+                  <div>
+                    <p class="text-xs text-white/80">Recordatorio WhatsApp</p>
+                    <p class="text-sm font-bold">Aviso automático 30 min antes</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <button type="button" onclick="cambiarPartidoRiver()" class="text-xs font-bold text-charcoal-ink hover:text-loud-red flex items-center gap-1 transition-colors">
+                    <span class="material-symbols-outlined text-[15px]">swap_horiz</span>
+                    <span>Ver otro partido</span>
+                  </button>
+                  <a id="riverCalendarLink" href="#" target="_blank" rel="noopener" class="text-xs font-bold text-loud-red hover:underline flex items-center gap-0.5">
+                    <span>+ Google Calendar</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Liga Profesional Mini Strip -->
+            <div id="riverStandingsStrip" class="bg-oat-canvas rounded-xl p-3 border border-oat-border flex flex-wrap items-center justify-between gap-3">
+              <div id="riverStandingsList" class="flex flex-wrap items-center gap-3 text-xs">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-full bg-loud-red text-white font-bold flex items-center justify-center text-[11px]">1</span>
+                  <strong class="text-charcoal-ink text-sm">River Plate</strong>
+                  <span class="font-bold text-charcoal-ink tabular-nums">-- pts</span>
+                </div>
+              </div>
+              <div id="riverFormBadges" class="flex items-center gap-1">
+                <span class="text-[10px] font-bold uppercase text-charcoal-text/70 mr-1">Racha:</span>
+                <span class="w-5 h-5 rounded bg-charcoal-main text-white text-[10px] font-bold flex items-center justify-center">G</span>
+                <span class="w-5 h-5 rounded bg-charcoal-main text-white text-[10px] font-bold flex items-center justify-center">G</span>
+                <span class="w-5 h-5 rounded bg-oat-subtle text-charcoal-text text-[10px] font-bold flex items-center justify-center border border-oat-border">E</span>
+                <span class="w-5 h-5 rounded bg-charcoal-main text-white text-[10px] font-bold flex items-center justify-center">G</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- BOTTOM SPLIT: SERIES (4 COLS) + PROG & HEAVY METAL (3 COLS)     -->
+        <!-- =============================================================== -->
+        <div class="grid grid-cols-1 md:grid-cols-7 gap-4 md:gap-5 items-stretch">
+
+          <!-- BENTO 3: SERIES & "¿QUÉ MIRO HOY?" (TUS 6 PLATAFORMAS AR) -->
+          <section id="sec-series" class="bento-section md:col-span-4 bg-oat-card rounded-[20px] p-5 border border-oat-border shadow-sm flex flex-col justify-between gap-4">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between pb-2 border-b border-oat-border gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-bold uppercase tracking-widest text-charcoal-ink">Tus 6 Plataformas (AR)</span>
+                  <button type="button" onclick="document.getElementById('dlgTmdbConfig').showModal()" id="tmdbStatusBadge" class="px-2 py-0.5 rounded-full bg-oat-subtle text-charcoal-ink text-[10px] font-bold uppercase border border-oat-border hover:border-charcoal-main transition-colors">
+                    🔑 TMDB: Offline
+                  </button>
+                </div>
+                <button type="button" onclick="document.getElementById('dlgAgregarSerie').showModal()" class="text-xs font-bold text-loud-red hover:underline flex items-center gap-0.5 shrink-0">
+                  <span>+ Agregar serie</span>
+                </button>
+              </div>
+
+              <!-- Interactive Platform Filter Pills -->
+              <div class="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Filtrar por plataforma">
+                <button type="button" onclick="filtrarPlataforma('ALL')" data-plat="ALL" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-charcoal-main text-white transition-all">En curso (6)</button>
+                <button type="button" onclick="filtrarPlataforma('Max')" data-plat="Max" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Max</button>
+                <button type="button" onclick="filtrarPlataforma('Disney+')" data-plat="Disney+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Disney+</button>
+                <button type="button" onclick="filtrarPlataforma('Netflix')" data-plat="Netflix" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Netflix</button>
+                <button type="button" onclick="filtrarPlataforma('Paramount+')" data-plat="Paramount+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Paramount+</button>
+                <button type="button" onclick="filtrarPlataforma('Prime Video')" data-plat="Prime Video" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Prime</button>
+                <button type="button" onclick="filtrarPlataforma('Apple TV+')" data-plat="Apple TV+" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all">Apple TV+</button>
+                <button type="button" onclick="filtrarPlataforma('WATCHED')" data-plat="WATCHED" id="chipWatchedCount" class="plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-loud-tint text-loud-red border border-loud-red/30 hover:bg-loud-red hover:text-white transition-all">Ya vistas (0)</button>
+              </div>
+
+              <!-- Continue Watching Dynamic List -->
+              <div id="watchlistContainer" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- 10% LOUD RED CTA: ¿QUÉ MIRO HOY? -->
+            <button type="button" onclick="abrirQueMiroHoy()" class="w-full py-3 px-4 rounded-full bg-loud-red hover:bg-loud-dark active:scale-95 text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all">
+              <span class="material-symbols-outlined text-[18px]">casino</span>
+              <span>🎲 ¿Qué miro hoy? (Recomendar en mis 6)</span>
+            </button>
+          </section>
+
+          <!-- BENTO 4: HEAVY & PROGRESSIVE METAL RADAR (EN INGLÉS) -->
+          <section id="sec-metal" class="bento-section md:col-span-3 bg-oat-card rounded-[20px] p-5 border border-oat-border shadow-sm flex flex-col justify-between gap-4">
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center justify-between pb-2 border-b border-oat-border">
+                <div class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-charcoal-ink text-[18px]">graphic_eq</span>
+                  <span class="text-[11px] font-bold uppercase tracking-widest text-charcoal-ink">Prog &amp; Heavy Metal • EN</span>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-oat-subtle text-charcoal-ink text-[10px] font-bold uppercase border border-oat-border">Metal Archives</span>
+              </div>
+
+              <!-- Featured Spotlight Band -->
+              <div id="metalSpotlightCard" class="flex items-start gap-3">
+                <div class="w-14 h-14 rounded-xl bg-charcoal-main text-oat-card flex flex-col items-center justify-center shrink-0 border border-charcoal-border shadow-sm overflow-hidden relative">
+                  <img id="metalSpotlightArt" src="" alt="" class="w-full h-full object-cover hidden" />
+                  <div id="metalSpotlightFallback" class="flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-loud-red text-[22px]">album</span>
+                    <span id="metalSpotlightYear" class="text-[9px] font-bold uppercase tracking-wider text-charcoal-muted">2025</span>
+                  </div>
+                </div>
+                <div class="flex flex-col min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-1">
+                    <span id="metalSpotlightSubgenre" class="text-[10px] font-bold uppercase tracking-wider text-loud-red">Progressive Metal</span>
+                    <button type="button" onclick="rotarBandaMetal()" class="text-[11px] font-bold text-charcoal-ink hover:text-loud-red flex items-center gap-0.5" title="Siguiente banda">
+                      <span>Otra</span>
+                      <span class="material-symbols-outlined text-[14px]">refresh</span>
+                    </button>
+                  </div>
+                  <h4 id="metalSpotlightBand" class="text-lg font-bold text-charcoal-ink truncate">Dream Theater</h4>
+                  <p id="metalSpotlightAlbum" class="text-xs text-charcoal-text/80 truncate">Disco: Parasomnia / Images and Words</p>
+                </div>
+              </div>
+
+              <!-- Mini Similar Bands Preview -->
+              <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-charcoal-text/70">Bandas similares (Grafo EN):</span>
+                  <span id="metalSimilarCount" class="text-[10px] font-bold text-charcoal-ink">14 conectadas</span>
+                </div>
+                <p id="metalSimilarList" class="text-xs font-semibold text-charcoal-ink">
+                  Opeth • Haken • Symphony X • Queensrÿche • Fates Warning
+                </p>
+              </div>
+            </div>
+
+            <!-- 30% CHARCOAL CTA: EXPLORAR GRAFO -->
+            <button type="button" onclick="abrirGrafoMetal()" class="w-full py-2.5 px-4 rounded-full bg-charcoal-ink hover:bg-charcoal-tile active:scale-95 text-oat-card text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all">
+              <span>Explorar Grafo Metal Archives</span>
+              <span class="material-symbols-outlined text-[16px]">hub</span>
+            </button>
+          </section>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MOBILE DOCKED BOTTOM NAVIGATION BAR (30% CHARCOAL + 10% LOUD RED)     -->
+  <!-- ===================================================================== -->
+  <nav class="xl:hidden fixed bottom-0 inset-x-0 z-40 px-4 pb-3 pt-1 bg-gradient-to-t from-oat-canvas via-oat-canvas to-transparent no-print" aria-label="Navegación móvil">
+    <div class="bg-charcoal-ink text-oat-card rounded-2xl h-16 px-2 flex items-center justify-around shadow-xl border border-charcoal-border">
+      <button type="button" onclick="filtrarSeccion('all')" data-mnav="all" class="mnav-btn flex flex-col items-center justify-center gap-0.5 text-loud-red min-w-[56px]">
+        <span class="material-symbols-outlined text-[20px]">grid_view</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Inicio</span>
+      </button>
+      <button type="button" onclick="filtrarSeccion('salud')" data-mnav="salud" class="mnav-btn flex flex-col items-center justify-center gap-0.5 text-oat-card/70 hover:text-white min-w-[56px]">
+        <span class="material-symbols-outlined text-[20px]">favorite</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Salud</span>
+      </button>
+      <button type="button" onclick="abrirQueMiroHoy()" class="flex flex-col items-center justify-center gap-0.5 text-oat-card/70 hover:text-white min-w-[56px]">
+        <span class="material-symbols-outlined text-[20px]">live_tv</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">¿Qué miro?</span>
+      </button>
+      <button type="button" onclick="filtrarSeccion('river')" data-mnav="river" class="mnav-btn flex flex-col items-center justify-center gap-0.5 text-oat-card/70 hover:text-white min-w-[56px]">
+        <span class="material-symbols-outlined text-[20px]">sports_soccer</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">River</span>
+      </button>
+      <button type="button" onclick="abrirGrafoMetal()" class="flex flex-col items-center justify-center gap-0.5 text-oat-card/70 hover:text-white min-w-[56px]">
+        <span class="material-symbols-outlined text-[20px]">graphic_eq</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider">Metal</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 1: CARGAR GLUCEMIA (Native <dialog closedby="any">)            -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgGlucemia" closedby="any" aria-labelledby="dlgGlucemiaTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[92vw] max-w-md shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Diabetes Tipo 2 • Tu Ritmo</span>
+          <h2 id="dlgGlucemiaTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">Registrar Glucemia</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('dlgGlucemia').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink hover:bg-oat-border">✕</button>
+      </div>
+
+      <form id="formGlucemia" onsubmit="guardarGlucemia(event)" class="flex flex-col gap-4">
+        <div>
+          <label for="inputGlucoseVal" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Valor medido (mg/dL)</label>
+          <input id="inputGlucoseVal" type="number" min="40" max="500" required autofocus placeholder="Ej: 118" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-4 py-3 text-2xl font-bold text-charcoal-ink tabular-nums focus:outline-none focus:border-charcoal-ink" />
+        </div>
+
+        <div>
+          <label for="inputGlucoseSlot" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Momento de medición (Esquema rotativo)</label>
+          <select id="inputGlucoseSlot" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2.5 text-sm font-semibold text-charcoal-ink focus:outline-none focus:border-charcoal-ink">
+            <option value="En ayunas">En ayunas (Mañana)</option>
+            <option value="Antes de almorzar">Antes de almorzar</option>
+            <option value="2 hs después de almorzar">2 hs después de almorzar</option>
+            <option value="2 hs después de cenar (Vie/Sáb)">2 hs después de cenar (Viernes / Sábado)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="inputGlucoseNote" class="block text-xs font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Nota opcional (comida / actividad)</label>
+          <input id="inputGlucoseNote" type="text" placeholder="Ej: Asado con ensalada, caminata 20 min..." class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-sm text-charcoal-ink focus:outline-none focus:border-charcoal-ink" />
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('dlgGlucemia').close()" class="px-4 py-2.5 rounded-full bg-oat-subtle text-charcoal-ink text-xs font-bold uppercase tracking-wider">Cancelar</button>
+          <button type="submit" class="px-6 py-2.5 rounded-full bg-loud-red hover:bg-loud-dark text-white text-xs font-bold uppercase tracking-wider shadow-sm">Guardar Medición</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 2: HISTORIAL DE SALUD & EXPORTAR PDF MÉDICO                    -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgHistorialSalud" closedby="any" aria-labelledby="dlgHistorialTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[94vw] max-w-2xl shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Reporte para tu médico</span>
+          <h2 id="dlgHistorialTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">Historial de Glucemia &amp; Pastillas</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('dlgHistorialSalud').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
+      </div>
+
+      <!-- Editable Pill Names -->
+      <div class="bg-oat-canvas p-4 rounded-xl border border-oat-border grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="editPillManana" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Nombre Pastilla 05:00 AM</label>
+          <input id="editPillManana" type="text" onchange="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-3 py-1.5 text-sm font-semibold text-charcoal-ink" />
+        </div>
+        <div>
+          <label for="editPillNoche" class="block text-[10px] font-bold uppercase text-charcoal-text/70">Nombre Pastilla 20:45 HS (Pre-Cena)</label>
+          <input id="editPillNoche" type="text" onchange="actualizarNombresPastillas()" class="mt-1 w-full rounded-lg bg-oat-card border border-oat-border px-3 py-1.5 text-sm font-semibold text-charcoal-ink" />
+        </div>
+      </div>
+
+      <!-- Log Table -->
+      <div class="max-h-64 overflow-y-auto border border-oat-border rounded-xl bg-oat-canvas">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-oat-border bg-oat-subtle text-[10px] font-bold uppercase tracking-wider text-charcoal-ink">
+              <th class="py-2.5 px-3">Fecha / Día</th>
+              <th class="py-2.5 px-3">Momento</th>
+              <th class="py-2.5 px-3">Valor</th>
+              <th class="py-2.5 px-3">Notas</th>
+            </tr>
+          </thead>
+          <tbody id="glucoseHistoryTableBody" class="divide-y divide-oat-border tabular-nums">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+        <button type="button" onclick="compartirReporteWhatsApp()" class="px-4 py-2 rounded-full bg-charcoal-main text-oat-card text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">share</span>
+          <span>Mandar por WhatsApp</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="imprimirReporteMedico()" class="px-5 py-2 rounded-full bg-loud-red text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">print</span>
+            <span>Imprimir / Guardar PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 3: "🎲 ¿QUÉ MIRO HOY?" RECOMMENDER (TUS 6 PLATAFORMAS AR)      -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgQueMiro" closedby="any" aria-labelledby="dlgQueMiroTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[94vw] max-w-xl shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Max • Disney+ • Netflix • Paramount+ • Prime • Apple TV+</span>
+          <h2 id="dlgQueMiroTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">🎲 ¿Qué miro hoy en Argentina?</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('dlgQueMiro').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="recPlatFilter" class="block text-[10px] font-bold uppercase tracking-wider text-charcoal-text/70 mb-1">Plataforma</label>
+          <select id="recPlatFilter" onchange="sortearSerie()" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-xs font-bold text-charcoal-ink">
+            <option value="ALL">Cualquiera de mis 6 plataformas</option>
+            <option value="Max">Max (HBO)</option>
+            <option value="Netflix">Netflix</option>
+            <option value="Apple TV+">Apple TV+</option>
+            <option value="Prime Video">Amazon Prime Video</option>
+            <option value="Disney+">Disney+</option>
+            <option value="Paramount+">Paramount+</option>
+          </select>
+        </div>
+        <div>
+          <label for="recMoodFilter" class="block text-[10px] font-bold uppercase tracking-wider text-charcoal-text/70 mb-1">Qué ganas tenés hoy</label>
+          <select id="recMoodFilter" onchange="sortearSerie()" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-xs font-bold text-charcoal-ink">
+            <option value="ALL">Sorprendeme (Cualquier género)</option>
+            <option value="thriller">Thriller / Ciencia Ficción / Misterio</option>
+            <option value="crimen">Policial / Crimen / Mafia</option>
+            <option value="epica">Drama / Épica / Acción</option>
+            <option value="cortita">Capítulos cortos (Antes de dormir)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Recommendation Result Card -->
+      <div id="recResultCard" class="bg-charcoal-main text-oat-card rounded-2xl p-5 border border-charcoal-border flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-2">
+          <span id="recBadgePlat" class="px-3 py-0.5 rounded-full bg-loud-red text-white text-[11px] font-bold uppercase tracking-wider">Apple TV+</span>
+          <span id="recBadgeScore" class="text-xs font-bold text-oat-card/80 tabular-nums">★ 9.1 • Temporadas: 2</span>
+        </div>
+        <div class="flex items-start gap-3.5">
+          <img id="recPosterImg" src="" alt="" class="w-16 h-24 rounded-lg object-cover border border-white/10 hidden shrink-0" />
+          <div class="flex flex-col min-w-0">
+            <h3 id="recTitle" class="font-serif text-2xl font-semibold text-white">Severance</h3>
+            <p id="recGenre" class="text-xs font-semibold text-loud-red mt-0.5">Thriller Psicológico / Ciencia Ficción • 45 min por cap.</p>
+            <p id="recSynopsis" class="text-sm text-oat-card/90 leading-relaxed mt-2">
+              Un equipo de oficinistas tiene sus recuerdos divididos quirúrgicamente entre su trabajo y su vida personal. Intrigante de principio a fin.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <button type="button" onclick="sortearSerie()" class="px-4 py-2.5 rounded-full bg-oat-subtle hover:bg-oat-border text-charcoal-ink text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">casino</span>
+          <span>Tirar de nuevo</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="marcarRecomendadaYaLaVi()" class="px-4 py-2.5 rounded-full bg-charcoal-main hover:bg-charcoal-ink text-oat-card text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">done_all</span>
+            <span>Ya la vi</span>
+          </button>
+          <button type="button" onclick="agregarRecomendadaAMiLista()" class="px-5 py-2.5 rounded-full bg-loud-red hover:bg-loud-dark text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">playlist_add</span>
+            <span>Sumar a Mi Lista</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 4: AGREGAR SERIE MANUALMENTE                                   -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgAgregarSerie" closedby="any" aria-labelledby="dlgAgregarSerieTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[92vw] max-w-md shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <h2 id="dlgAgregarSerieTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">Sumar Serie a Mi Lista</h2>
+        <button type="button" onclick="document.getElementById('dlgAgregarSerie').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
+      </div>
+      <form onsubmit="guardarNuevaSerie(event)" class="flex flex-col gap-3">
+        <div>
+          <label for="newSerieTitle" class="block text-xs font-bold uppercase text-charcoal-text/80 mb-1">Nombre de la serie</label>
+          <input id="newSerieTitle" type="text" required placeholder="Ej: The Penguin, Silo, Reacher..." class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-sm font-semibold text-charcoal-ink" />
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label for="newSeriePlat" class="block text-xs font-bold uppercase text-charcoal-text/80 mb-1">Plataforma</label>
+            <select id="newSeriePlat" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-2 py-2 text-xs font-bold text-charcoal-ink">
+              <option value="Max">Max</option>
+              <option value="Netflix">Netflix</option>
+              <option value="Disney+">Disney+</option>
+              <option value="Prime Video">Prime Video</option>
+              <option value="Paramount+">Paramount+</option>
+              <option value="Apple TV+">Apple TV+</option>
+            </select>
+          </div>
+          <div>
+            <label for="newSerieSeason" class="block text-xs font-bold uppercase text-charcoal-text/80 mb-1">Temp.</label>
+            <input id="newSerieSeason" type="number" min="1" value="1" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-sm font-bold text-charcoal-ink tabular-nums" />
+          </div>
+          <div>
+            <label for="newSerieEp" class="block text-xs font-bold uppercase text-charcoal-text/80 mb-1">Capítulo</label>
+            <input id="newSerieEp" type="number" min="1" value="1" class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-sm font-bold text-charcoal-ink tabular-nums" />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="document.getElementById('dlgAgregarSerie').close()" class="px-4 py-2 rounded-full bg-oat-subtle text-xs font-bold uppercase">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-full bg-loud-red text-white text-xs font-bold uppercase">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 5: GRAFO INTERACTIVO DE HEAVY & PROG METAL (EN INGLÉS)         -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgMetal" closedby="any" aria-labelledby="dlgMetalTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[95vw] max-w-2xl shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Encyclopaedia Metallum • Heavy &amp; Progressive Metal (EN)</span>
+          <h2 id="dlgMetalTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">Grafo de Afinidad &amp; Discos Clave</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('dlgMetal').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
+      </div>
+
+      <!-- Search ANY Band + User's Saved Bands -->
+      <form onsubmit="buscarBandaMetal(event)" class="flex items-center gap-2">
+        <input id="inputSearchBand" type="text" required placeholder="Buscá cualquier banda (ej: Gojira, Tool, Blind Guardian, Megadeth...)" class="flex-1 rounded-xl bg-oat-canvas border border-oat-border px-3.5 py-2 text-xs font-semibold text-charcoal-ink focus:outline-none focus:border-charcoal-ink" />
+        <button type="submit" class="px-4 py-2 rounded-full bg-loud-red hover:bg-loud-dark text-white text-[11px] font-bold uppercase tracking-wider shrink-0">Buscar</button>
+        <button type="button" onclick="guardarBandaActualEnFavoritas()" class="px-3 py-2 rounded-full bg-charcoal-main text-oat-card text-[11px] font-bold uppercase tracking-wider shrink-0" title="Guardar esta banda en tus favoritas">+ Guardar</button>
+      </form>
+
+      <!-- Band Selector Chips (Your Favorite Bands) -->
+      <div id="metalGraphChips" class="flex items-center gap-1.5 flex-wrap">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Visual Affinity Card -->
+      <div class="bg-charcoal-main text-oat-card rounded-2xl p-5 border border-charcoal-border flex flex-col gap-4">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="flex items-start gap-3.5 min-w-0 flex-1">
+            <img id="graphBandArt" src="" alt="" class="w-16 h-16 rounded-xl object-cover border border-white/15 shrink-0 hidden" />
+            <div class="min-w-0">
+              <span id="graphBandGenre" class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Progressive Metal • USA</span>
+              <h3 id="graphBandName" class="font-serif text-3xl font-semibold text-white">Dream Theater</h3>
+              <div id="graphBandAlbumsRow" class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                <!-- Clickable essential album pills populated by JS -->
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 flex-wrap">
+            <a id="graphThisIsLink" href="https://open.spotify.com/search/This%20Is%20Dream%20Theater" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-full bg-[#1DB954] hover:opacity-90 text-black text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <span>This Is</span>
+              <span class="material-symbols-outlined text-[14px]">play_arrow</span>
+            </a>
+            <a id="graphMetallumLink" href="https://www.metal-archives.com/bands/Dream_Theater/37" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-full bg-loud-red hover:bg-loud-dark text-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <span>Metal Archives</span>
+              <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+            </a>
+          </div>
+        </div>
+
+        <p id="graphBandWhy" class="text-sm text-oat-card/90 leading-relaxed">
+          Pioneros indiscutidos del metal progresivo en inglés: virtuosismo instrumental, métricas complejas y álbumes conceptuales épicos.
+        </p>
+
+        <!-- Connected Similar Nodes (Clickable to pivot the graph!) -->
+        <div class="pt-3 border-t border-white/10">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-charcoal-muted block mb-2">Tocá una banda conectada para navegar el grafo:</span>
+          <div id="graphSimilarNodes" class="flex flex-wrap gap-2">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Spotify Playlists & Community Integration -->
+      <div class="bg-oat-canvas rounded-2xl p-4 border border-oat-border flex flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Spotify • Reproductor de la Banda &amp; Playlists</span>
+            <p class="text-xs text-charcoal-text/80">Se actualiza automático con la banda que elegís, o pegá cualquier link de playlist de Spotify:</p>
+          </div>
+        </div>
+
+        <form onsubmit="cargarUrlSpotifyCustom(event)" class="flex items-center gap-2">
+          <input id="inputSpotifyUrl" type="url" placeholder="Pegá acá el link de una playlist o disco de Spotify (ej: https://open.spotify.com/playlist/...)" class="flex-1 rounded-xl bg-oat-card border border-oat-border px-3 py-2 text-xs text-charcoal-ink" />
+          <button type="submit" class="px-4 py-2 rounded-full bg-charcoal-ink text-white text-[11px] font-bold uppercase tracking-wider shrink-0">Cargar</button>
+        </form>
+
+        <iframe id="spotifyEmbedFrame" class="w-full rounded-xl border border-oat-border" style="height: 152px;" src="https://open.spotify.com/embed/artist/2aaLAng2L2aWD2FClzwiep?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 6: CENTRO DE ALERTAS WHATSAPP & NOTIFICACIONES                 -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgWhatsapp" closedby="any" aria-labelledby="dlgWhatsappTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[94vw] max-w-lg shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Recordatorios Automáticos</span>
+          <h2 id="dlgWhatsappTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">Alertas WhatsApp &amp; Celular</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('dlgWhatsapp').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
+      </div>
+
+      <div class="flex flex-col gap-3 text-xs">
+        <div class="p-3.5 rounded-xl bg-oat-canvas border border-oat-border flex flex-col gap-2">
+          <label for="inputWaPhone" class="font-bold uppercase tracking-wider text-charcoal-ink">Tu número de WhatsApp (Argentina)</label>
+          <input id="inputWaPhone" type="tel" placeholder="Ej: 5491123456789" onchange="guardarConfigWa()" class="w-full rounded-lg bg-oat-card border border-oat-border px-3 py-2 text-sm font-bold text-charcoal-ink tabular-nums" />
+          <p class="text-[11px] text-charcoal-text/75">Se usa para abrir tu WhatsApp directo con el resumen de glucemia o mandarte recordatorios rápidos.</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-charcoal-main text-oat-card flex flex-col gap-2.5">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Horarios Programados</span>
+          <div class="flex items-center justify-between">
+            <span>💊 Pastilla Mañana (05:00 AM)</span>
+            <span class="px-2 py-0.5 rounded bg-charcoal-tile text-[10px] font-bold uppercase">Activo</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>💊 Pastilla Pre-Cena (20:45 HS • Antes de las 21)</span>
+            <span class="px-2 py-0.5 rounded bg-loud-red text-white text-[10px] font-bold uppercase">Prioridad</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>🩸 Glucemia Viernes/Sábado (23:00 HS • 2h Post-Cena)</span>
+            <span class="px-2 py-0.5 rounded bg-charcoal-tile text-[10px] font-bold uppercase">Fin de Semana</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span>⚽ Partido de River Plate (30 min antes)</span>
+            <span class="px-2 py-0.5 rounded bg-charcoal-tile text-[10px] font-bold uppercase">Activo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+        <button type="button" onclick="activarNotificacionesNativas()" class="px-4 py-2.5 rounded-full bg-charcoal-ink text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">notifications</span>
+          <span>Probar Alerta en Celular/PC</span>
+        </button>
+        <button type="button" onclick="enviarMensajePruebaWhatsApp()" class="px-5 py-2.5 rounded-full bg-loud-red hover:bg-loud-dark text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">send</span>
+          <span>Mandar Prueba a mi WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===================================================================== -->
+  <!-- DIALOG 7: CONFIGURAR API KEY GRATUITA DE TMDB (ARGENTINA)             -->
+  <!-- ===================================================================== -->
+  <dialog id="dlgTmdbConfig" closedby="any" aria-labelledby="dlgTmdbTitle" class="rounded-[20px] bg-oat-card text-charcoal-text border border-oat-border p-0 w-[94vw] max-w-md shadow-2xl">
+    <div class="p-6 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b border-oat-border pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-loud-red">Datos en Vivo • Argentina (AR)</span>
+          <h2 id="dlgTmdbTitle" class="font-serif text-2xl font-semibold text-charcoal-ink">Conectar API Gratuita de TMDB</h2>
+        </div>
+        <button type="button" onclick="document.getElementById('dlgTmdbConfig').close()" aria-label="Cerrar" class="w-8 h-8 rounded-full bg-oat-subtle flex items-center justify-center text-charcoal-ink">✕</button>
+      </div>
+
+      <p class="text-xs text-charcoal-text/85 leading-relaxed">
+        <strong>TMDB (The Movie Database)</strong> es una base de datos gratuita que sabe qué series están disponibles hoy mismo en <strong>Argentina</strong> dentro de tus 6 plataformas (Max, Disney+, Netflix, Paramount+, Prime y Apple TV+).
+      </p>
+
+      <div class="bg-oat-canvas p-3.5 rounded-xl border border-oat-border text-xs flex flex-col gap-1.5">
+        <span class="font-bold text-charcoal-ink">Cómo sacar tu clave gratis en 1 minuto:</span>
+        <span>1. Entrá a <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener" class="text-loud-red font-bold underline">themoviedb.org</a> y creá una cuenta gratis.</span>
+        <span>2. Andá a <em>Configuración → API → Crear (Developer)</em>.</span>
+        <span>3. Copiá tu <strong>Clave de API (v3 auth)</strong> y pegala acá abajo:</span>
+      </div>
+
+      <form onsubmit="guardarTmdbKey(event)" class="flex flex-col gap-3">
+        <div>
+          <label for="inputTmdbKey" class="block text-[10px] font-bold uppercase tracking-wider text-charcoal-text/80 mb-1">Tu TMDB API Key (se guarda solo en tu navegador)</label>
+          <input id="inputTmdbKey" type="text" placeholder="Ej: a1b2c3d4e5f6..." class="w-full rounded-xl bg-oat-canvas border border-oat-border px-3 py-2 text-xs font-mono text-charcoal-ink" />
+        </div>
+        <div class="flex items-center justify-between gap-2 pt-1">
+          <button type="button" onclick="borrarTmdbKey()" class="text-xs font-bold text-charcoal-text/70 hover:text-loud-red">Usar modo offline</button>
+          <button type="submit" class="px-5 py-2 rounded-full bg-loud-red hover:bg-loud-dark text-white text-xs font-bold uppercase tracking-wider">Guardar y Conectar</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- PRINTABLE MEDICAL REPORT (Only visible when printing/exporting PDF) -->
+  <section class="hidden print-only p-8">
+    <h1 class="font-serif text-3xl font-bold mb-1">Reporte Personal de Diabetes Tipo 2</h1>
+    <p class="text-sm mb-4">Esquema de medicación: 05:00 AM y 20:45 HS (Pre-Cena) • Mediciones rotativas día de por medio + Viernes/Sábado 2 hs post-cena.</p>
+    <div id="printReportContent"></div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION LOGIC                                                     -->
+  <!-- ===================================================================== -->
+  <script>
+    // Modern Web Guidance: Mandatory fallback for <dialog closedby="any">
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      for (const dialog of document.querySelectorAll('dialog[closedby="any"]')) {
+        dialog.addEventListener('click', (event) => {
+          if (event.target !== dialog) return;
+          const rect = dialog.getBoundingClientRect();
+          const isDialogContent = (
+            rect.top <= event.clientY &&
+            event.clientY <= rect.top + rect.height &&
+            rect.left <= event.clientX &&
+            event.clientX <= rect.left + rect.width
+          );
+          if (isDialogContent) return;
+          dialog.close();
+        });
+      }
+    }
+
+    // --- DEFAULT STATE & LOCALSTORAGE ---
+    const STORAGE_KEY = 'mi_hub_personal_v2';
+    const todayKey = new Date().toISOString().slice(0, 10);
+
+    const defaultState = {
+      waPhone: '',
+      tmdbKey: '',
+      pillNames: {
+        manana: 'Metformina 850mg (Mañana)',
+        noche: 'Metformina 850mg (Pre-Cena)'
+      },
+      pillsTakenByDate: {
+        [todayKey]: { manana: true, noche: false }
+      },
+      glucoseLogs: [
+        { date: 'Viernes', slot: 'En ayunas', value: 114, note: 'Desayuno liviano' },
+        { date: 'Miércoles', slot: 'Antes de almorzar', value: 118, note: 'Día de por medio' },
+        { date: 'Lunes', slot: '2 hs después de almorzar', value: 126, note: 'Pollo con ensalada' },
+        { date: 'Sábado ant.', slot: '2 hs después de cenar (Vie/Sáb)', value: 132, note: 'Mirando serie a las 23:15' }
+      ],
+      watchlist: [
+        { id: 1, title: 'Severance', platform: 'Apple TV+', season: 2, ep: 4, note: 'Restan 24 min' },
+        { id: 2, title: 'The Penguin', platform: 'Max', season: 1, ep: 5, note: 'Audio original' },
+        { id: 3, title: 'Tulsa King', platform: 'Paramount+', season: 2, ep: 3, note: 'Capítulos de 40m' },
+        { id: 4, title: 'Fallout', platform: 'Prime Video', season: 1, ep: 6, note: '4K HDR' }
+      ],
+      watchedSeries: [],
+      spotifyEmbedUrl: 'https://open.spotify.com/embed/artist/2aaLAng2L2aWD2FClzwiep?utm_source=generator&theme=0',
+      riverMatchIndex: 0,
+      metalBandIndex: 0
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        if (!parsed.pillsTakenByDate) parsed.pillsTakenByDate = {};
+        if (!parsed.pillsTakenByDate[todayKey]) {
+          parsed.pillsTakenByDate[todayKey] = { manana: false, noche: false };
+        }
+        if (parsed.pillNames?.noche === 'Pastilla Pre-Cena (Antes de 21 hs)') {
+          parsed.pillNames.noche = 'Metformina 850mg (Pre-Cena)';
+        }
+        if (parsed.spotifyEmbedUrl && parsed.spotifyEmbedUrl.includes('37i9dQZF1DX5YTAi6JhwZm')) {
+          parsed.spotifyEmbedUrl = defaultState.spotifyEmbedUrl;
+        }
+        return { ...structuredClone(defaultState), ...parsed };
+      } catch {
+        return structuredClone(defaultState);
+      }
+    }
+
+    let state = loadState();
+    let activePlatformFilter = 'ALL';
+    let currentRecSerie = null;
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    // --- 1. SALUD & DIABETES T2 (PASTILLAS + GLUCEMIA ROTATIVA) ---
+    function getSmartGlucoseRecommendation() {
+      const day = new Date().getDay(); // 0=Dom, 5=Vie, 6=Sab
+      if (day === 5 || day === 6) {
+        return {
+          badge: 'Viernes/Sábado • Post-Cena Activo',
+          nextSlot: 'Hoy 23:00 hs (2 hs después de cenar)'
+        };
+      }
+      const slots = [
+        'En ayunas (Mañana)',
+        'Antes de almorzar (12:30 hs)',
+        '2 hs después de almorzar (15:00 hs)'
+      ];
+      const chosen = slots[day % slots.length];
+      return {
+        badge: 'Esquema Día por Medio (Sin Post-Cena)',
+        nextSlot: chosen
+      };
+    }
+
+    function renderSalud() {
+      const todayPills = state.pillsTakenByDate[todayKey] || { manana: false, noche: false };
+      document.getElementById('nombrePastillaManana').textContent = state.pillNames.manana;
+      document.getElementById('nombrePastillaNoche').textContent = state.pillNames.noche;
+      document.getElementById('editPillManana').value = state.pillNames.manana;
+      document.getElementById('editPillNoche').value = state.pillNames.noche;
+      document.getElementById('inputWaPhone').value = state.waPhone || '';
+
+      // Dose 1: 05:00 AM
+      const badgeM = document.getElementById('badgeManana');
+      const btnM = document.getElementById('btnToggleManana');
+      if (todayPills.manana) {
+        badgeM.textContent = '✓ Tomada';
+        badgeM.className = 'px-2.5 py-0.5 rounded-full bg-oat-card text-charcoal-main text-[10px] font-bold uppercase tracking-wider';
+        btnM.textContent = 'Tomada a las 05:00 ✓';
+        btnM.className = 'w-full py-1.5 px-3 rounded-full bg-charcoal-main/60 text-oat-card/80 text-[11px] font-bold uppercase tracking-wider border border-white/10 transition-all';
+      } else {
+        badgeM.textContent = 'Pendiente';
+        badgeM.className = 'px-2.5 py-0.5 rounded-full bg-loud-red/20 text-loud-red text-[10px] font-bold uppercase tracking-wider';
+        btnM.textContent = 'Marcar Tomada (05:00)';
+        btnM.className = 'w-full py-1.5 px-3 rounded-full bg-loud-red text-white text-[11px] font-bold uppercase tracking-wider transition-all';
+      }
+
+      // Dose 2: 20:45 HS (Pre-Cena)
+      const badgeN = document.getElementById('badgeNoche');
+      const btnN = document.getElementById('btnToggleNoche');
+      const cardN = document.getElementById('cardDosisNoche');
+      const dotN = document.getElementById('dotNoche');
+      if (todayPills.noche) {
+        badgeN.textContent = '✓ Tomada';
+        badgeN.className = 'px-2.5 py-0.5 rounded-full bg-oat-card text-charcoal-main text-[10px] font-bold uppercase tracking-wider';
+        btnN.innerHTML = '<span>Tomada Pre-Cena ✓</span>';
+        btnN.className = 'w-full py-2 px-3 rounded-full bg-charcoal-main/60 text-oat-card/80 text-[11px] font-bold uppercase tracking-wider border border-white/10 transition-all';
+        cardN.className = 'bg-charcoal-tile rounded-2xl p-4 border border-white/10 flex flex-col justify-between gap-3';
+        dotN.className = 'w-2 h-2 rounded-full bg-oat-card';
+      } else {
+        badgeN.textContent = 'Pendiente';
+        badgeN.className = 'text-[10px] font-bold uppercase tracking-wider text-loud-red bg-loud-red/15 px-2 py-0.5 rounded-full';
+        btnN.innerHTML = '<span class="material-symbols-outlined text-[15px]">check_circle</span><span>Marcar Tomada</span>';
+        btnN.className = 'w-full py-2 px-3 rounded-full bg-loud-red hover:bg-loud-dark active:scale-95 text-white text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all';
+        cardN.className = 'bg-charcoal-tile rounded-2xl p-4 border border-loud-red/40 flex flex-col justify-between gap-3';
+        dotN.className = 'w-2 h-2 rounded-full bg-loud-red animate-pulse';
+      }
+
+      // Glucose display + SVG Historical Chart
+      const logs = state.glucoseLogs;
+      if (logs.length > 0) {
+        const latest = logs[0];
+        document.getElementById('lastGlucoseValue').textContent = latest.value;
+        document.getElementById('lastGlucoseContext').textContent = `(Última: ${latest.slot} • ${latest.date})`;
+        const avg = Math.round(logs.reduce((acc, item) => acc + Number(item.value), 0) / logs.length);
+        document.getElementById('avgGlucoseBadge').textContent = `Promedio: ${avg} mg/dL`;
+      }
+      renderGlucoseChart(logs);
+
+      const smart = getSmartGlucoseRecommendation();
+      document.getElementById('esquemaDiaBadge').textContent = smart.badge;
+      document.getElementById('nextGlucoseSlot').textContent = smart.nextSlot;
+
+      // Render 4 recent boxes in weekly strip
+      const strip = document.getElementById('weeklyGlucoseStrip');
+      const recent4 = logs.slice(0, 4);
+      strip.innerHTML = recent4.map((entry, idx) => {
+        const isFirst = idx === 0;
+        return `
+          <div class="flex flex-col items-center p-2 rounded-xl text-center border ${isFirst ? 'bg-loud-red/20 border-loud-red' : 'bg-charcoal-main/70 border-white/10'}">
+            <span class="text-[10px] font-bold uppercase ${isFirst ? 'text-white' : 'text-charcoal-muted'} truncate w-full">${entry.date}</span>
+            <span class="text-sm font-bold text-oat-card tabular-nums mt-0.5">${entry.value} mg</span>
+            <span class="text-[9px] font-semibold ${isFirst ? 'text-oat-card' : 'text-charcoal-muted'} truncate w-full">${entry.slot.replace('2 hs después de ', 'Post-').replace('Antes de ', 'Pre-')}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Render history table inside dialog & printable view (capped at 100 rows for DOM performance)
+      const tbody = document.getElementById('glucoseHistoryTableBody');
+      const visibleLogs = logs.slice(0, 100);
+      tbody.innerHTML = visibleLogs.map((entry) => `
+        <tr>
+          <td class="py-2 px-3 font-semibold text-charcoal-ink">${entry.date}</td>
+          <td class="py-2 px-3 text-charcoal-text">${entry.slot}</td>
+          <td class="py-2 px-3 font-bold text-charcoal-ink">${entry.value} mg/dL</td>
+          <td class="py-2 px-3 text-charcoal-text/80">${entry.note || '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderGlucoseChart(logs) {
+      const box = document.getElementById('glucoseChartContainer');
+      if (!box) return;
+      const points = [...logs].slice(0, 7).reverse();
+      if (points.length < 2) {
+        box.innerHTML = '<span class="text-[10px] text-charcoal-muted">Cargá 2+ mediciones para ver tendencia</span>';
+        return;
+      }
+      const vals = points.map(p => Number(p.value));
+      const minV = Math.min(70, ...vals) - 10;
+      const maxV = Math.max(150, ...vals) + 10;
+      const w = 220;
+      const h = 52;
+      const padX = 12;
+      const padY = 8;
+      const span = Math.max(1, maxV - minV);
+
+      const coords = points.map((p, i) => {
+        const x = padX + (i * (w - padX * 2)) / (points.length - 1);
+        const y = h - padY - ((Number(p.value) - minV) / span) * (h - padY * 2);
+        return { x, y, v: Number(p.value) };
+      });
+
+      // Target band (70 - 130 mg/dL)
+      const y130 = h - padY - ((130 - minV) / span) * (h - padY * 2);
+      const y70 = h - padY - ((70 - minV) / span) * (h - padY * 2);
+      const polyPoints = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(' ');
+
+      box.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" class="w-full h-full overflow-visible" aria-label="Tendencia histórica de glucemia">
+          <rect x="${padX}" y="${Math.max(0, y130).toFixed(1)}" width="${w - padX * 2}" height="${Math.max(4, y70 - y130).toFixed(1)}" fill="rgba(250,247,242,0.08)" rx="3"></rect>
+          <polyline fill="none" stroke="#FAF7F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="${polyPoints}"></polyline>
+          ${coords.map((c, idx) => {
+            const isLast = idx === coords.length - 1;
+            const color = c.v > 140 ? '#E53935' : (isLast ? '#E53935' : '#FAF7F2');
+            return `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isLast ? 3.5 : 2.5}" fill="${color}"></circle>`;
+          }).join('')}
+        </svg>
+      `;
+    }
+
+    function togglePastilla(turno) {
+      if (!state.pillsTakenByDate[todayKey]) {
+        state.pillsTakenByDate[todayKey] = { manana: false, noche: false };
+      }
+      state.pillsTakenByDate[todayKey][turno] = !state.pillsTakenByDate[todayKey][turno];
+      saveState();
+      renderSalud();
+    }
+
+    function actualizarNombresPastillas() {
+      const m = document.getElementById('editPillManana').value.trim();
+      const n = document.getElementById('editPillNoche').value.trim();
+      if (m) state.pillNames.manana = m;
+      if (n) state.pillNames.noche = n;
+      saveState();
+      renderSalud();
+    }
+
+    function guardarGlucemia(e) {
+      e.preventDefault();
+      const val = Number(document.getElementById('inputGlucoseVal').value);
+      const slot = document.getElementById('inputGlucoseSlot').value;
+      const note = document.getElementById('inputGlucoseNote').value.trim();
+      if (!val) return;
+
+      const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const hoyNombre = dias[new Date().getDay()];
+      state.glucoseLogs.unshift({
+        date: `${hoyNombre} (${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })})`,
+        slot,
+        value: val,
+        note: note || 'Registro manual'
+      });
+      saveState();
+      renderSalud();
+      document.getElementById('formGlucemia').reset();
+      document.getElementById('dlgGlucemia').close();
+    }
+
+    function compartirReporteWhatsApp() {
+      const ultimas = state.glucoseLogs.slice(0, 5)
+        .map(l => `• ${l.date} [${l.slot}]: *${l.value} mg/dL* (${l.note || 'sin nota'})`)
+        .join('\n');
+      const avg = Math.round(state.glucoseLogs.reduce((a, b) => a + Number(b.value), 0) / state.glucoseLogs.length);
+      const texto = `*Mi Hub — Reporte Diabetes T2*\n` +
+        `• Pastillas: 05:00 AM (${state.pillNames.manana}) y 20:45 HS (${state.pillNames.noche})\n` +
+        `• Promedio reciente: *${avg} mg/dL*\n\n` +
+        `*Últimas mediciones:*\n${ultimas}`;
+      const phone = (state.waPhone || '').replace(/\D/g, '');
+      const url = phone
+        ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(texto)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank', 'noopener');
+    }
+
+    function imprimirReporteMedico() {
+      const container = document.getElementById('printReportContent');
+      container.innerHTML = document.getElementById('glucoseHistoryTableBody').parentElement.outerHTML;
+      window.print();
+    }
+
+    // --- 2. RIVER PLATE FIXTURE & COUNTDOWN (LIVE ESPN API + FALLBACK) ---
+    let riverFixtures = [
+      {
+        title: 'River Plate vs. Independiente',
+        round: 'Liga Profesional • Próximo',
+        stadium: 'Estadio Mâs Monumental • Domingo 19:15 hs (AR)',
+        tv: 'ESPN Premium • Pack Fútbol',
+        isoDate: null,
+        daysOffset: 1,
+        hoursOffset: 18,
+        minsOffset: 30
+      }
+    ];
+    let countdownInterval = null;
+
+    function updateCountdownDisplay(match) {
+      if (match.isoDate) {
+        const diffMs = new Date(match.isoDate).getTime() - Date.now();
+        if (diffMs > 0) {
+          const d = Math.floor(diffMs / 86400000);
+          const h = Math.floor((diffMs % 86400000) / 3600000);
+          const m = Math.floor((diffMs % 3600000) / 60000);
+          document.getElementById('cdDays').textContent = String(d).padStart(2, '0');
+          document.getElementById('cdHours').textContent = String(h).padStart(2, '0');
+          document.getElementById('cdMins').textContent = String(m).padStart(2, '0');
+          return;
+        }
+        document.getElementById('cdDays').textContent = '00';
+        document.getElementById('cdHours').textContent = '00';
+        document.getElementById('cdMins').textContent = '00';
+        return;
+      }
+      document.getElementById('cdDays').textContent = String(match.daysOffset ?? 0).padStart(2, '0');
+      document.getElementById('cdHours').textContent = String(match.hoursOffset ?? 0).padStart(2, '0');
+      document.getElementById('cdMins').textContent = String(match.minsOffset ?? 0).padStart(2, '0');
+    }
+
+    function renderRiver() {
+      const match = riverFixtures[state.riverMatchIndex % riverFixtures.length];
+      document.getElementById('riverMatchTitle').textContent = match.title;
+      document.getElementById('riverMatchRound').textContent = match.round;
+      document.getElementById('riverMatchMeta').innerHTML = `<span class="material-symbols-outlined text-[16px] text-loud-red">location_on</span><span>${match.stadium}</span>`;
+      document.getElementById('riverMatchTv').textContent = match.tv;
+      updateCountdownDisplay(match);
+
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => updateCountdownDisplay(match), 30000);
+
+      const calTitle = encodeURIComponent(`⚽ ${match.title} (${match.tv})`);
+      const calDetails = encodeURIComponent(`${match.round} - ${match.stadium}`);
+      document.getElementById('riverCalendarLink').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${calTitle}&details=${calDetails}`;
+    }
+
+    function cambiarPartidoRiver() {
+      state.riverMatchIndex = (state.riverMatchIndex + 1) % riverFixtures.length;
+      saveState();
+      renderRiver();
+    }
+
+    async function cargarRiverEnVivo() {
+      const badge = document.getElementById('riverLiveBadge');
+      try {
+        const [teamRes, schedRes, standRes] = await Promise.all([
+          fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/teams/16'),
+          fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/teams/16/schedule'),
+          fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/arg.1/standings')
+        ]);
+
+        const mappedUpcoming = [];
+        if (teamRes.ok) {
+          const teamData = await teamRes.json();
+          const nextEvents = teamData.team?.nextEvent || [];
+          for (const ev of nextEvents) {
+            const comp = ev.competitions?.[0];
+            const dt = new Date(ev.date);
+            const fechaAr = dt.toLocaleString('es-AR', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+            mappedUpcoming.push({
+              id: ev.id,
+              title: ev.name.replace(' at ', ' vs. '),
+              round: comp?.status?.type?.name === 'STATUS_IN_PROGRESS' ? 'EN VIVO' : 'Próximo Partido',
+              stadium: `${comp?.venue?.fullName || 'Estadio Mâs Monumental'} • ${fechaAr} hs`,
+              tv: comp?.broadcasts?.[0]?.media?.shortName || 'ESPN Premium / TNT Sports AR',
+              isoDate: ev.date
+            });
+          }
+        }
+
+        if (schedRes.ok) {
+          const schedData = await schedRes.json();
+          const events = schedData.events || [];
+          const upcoming = events.filter(ev => {
+            const st = ev.competitions?.[0]?.status?.type?.name;
+            const notDup = !mappedUpcoming.some(m => m.id === ev.id);
+            return notDup && (st === 'STATUS_SCHEDULED' || st === 'STATUS_IN_PROGRESS');
+          });
+          const recentPlayed = events.filter(ev => ev.competitions?.[0]?.status?.type?.name === 'STATUS_FULL_TIME');
+
+          upcoming.forEach(ev => {
+            const comp = ev.competitions[0];
+            const dt = new Date(ev.date);
+            const fechaAr = dt.toLocaleString('es-AR', { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+            mappedUpcoming.push({
+              id: ev.id,
+              title: ev.name.replace(' at ', ' vs. '),
+              round: comp.status?.type?.name === 'STATUS_IN_PROGRESS' ? 'EN VIVO' : 'Próximo Partido',
+              stadium: `${comp.venue?.fullName || 'Estadio a confirmar'} • ${fechaAr} hs`,
+              tv: comp.broadcasts?.[0]?.media?.shortName || 'ESPN / TNT Sports AR',
+              isoDate: ev.date
+            });
+          });
+
+          const mappedRecent = recentPlayed.slice(0, 3).map(ev => {
+            const comp = ev.competitions[0];
+            const comps = comp.competitors || [];
+            const scoreStr = comps.map(c => `${c.team.shortDisplayName || c.team.displayName} ${c.score?.displayValue ?? ''}`).join(' - ');
+            const dt = new Date(ev.date);
+            const fechaAr = dt.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
+            return {
+              title: scoreStr || ev.name,
+              round: `Último (${fechaAr})`,
+              stadium: `${comp.venue?.fullName || 'Estadio'} • Finalizado`,
+              tv: 'Liga Profesional AR',
+              isoDate: null,
+              daysOffset: 0,
+              hoursOffset: 0,
+              minsOffset: 0
+            };
+          });
+
+          const combined = [...mappedUpcoming, ...mappedRecent];
+          if (combined.length > 0) {
+            riverFixtures = combined;
+            state.riverMatchIndex = 0;
+            renderRiver();
+            if (badge) badge.textContent = 'ESPN En Vivo ✓';
+          }
+
+          // Compute River form (G/E/P) from last 4 played matches
+          const formHtml = recentPlayed.slice(0, 4).map(ev => {
+            const comps = ev.competitions?.[0]?.competitors || [];
+            const river = comps.find(c => String(c.team?.id) === '16');
+            if (!river) return '';
+            if (river.winner) return '<span class="w-5 h-5 rounded bg-charcoal-main text-white text-[10px] font-bold flex items-center justify-center">G</span>';
+            const scores = comps.map(c => Number(c.score?.value ?? -1));
+            const isDraw = scores.length === 2 && scores[0] === scores[1];
+            return isDraw
+              ? '<span class="w-5 h-5 rounded bg-oat-subtle text-charcoal-text text-[10px] font-bold flex items-center justify-center border border-oat-border">E</span>'
+              : '<span class="w-5 h-5 rounded bg-loud-red text-white text-[10px] font-bold flex items-center justify-center">P</span>';
+          }).join('');
+          if (formHtml) {
+            document.getElementById('riverFormBadges').innerHTML = `<span class="text-[10px] font-bold uppercase text-charcoal-text/70 mr-1">Racha:</span>${formHtml}`;
+          }
+        }
+
+        if (standRes.ok) {
+          const standData = await standRes.json();
+          const entries = standData.children?.[0]?.standings?.entries || [];
+          const sorted = entries
+            .map(e => ({
+              id: String(e.team?.id),
+              name: e.team?.shortDisplayName || e.team?.displayName,
+              pts: Number(e.stats?.find(s => s.name === 'points')?.value ?? 0)
+            }))
+            .sort((a, b) => b.pts - a.pts);
+
+          const riverIdx = sorted.findIndex(t => t.id === '16');
+          const topList = sorted.slice(0, 3);
+          const riverEntry = riverIdx >= 0 ? { ...sorted[riverIdx], pos: riverIdx + 1 } : null;
+
+          if (topList.length > 0) {
+            const itemsHtml = topList.map((t, idx) => `
+              <div class="flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full ${t.id === '16' ? 'bg-loud-red text-white' : 'bg-oat-subtle text-charcoal-ink'} font-bold flex items-center justify-center text-[11px]">${idx + 1}</span>
+                <strong class="${t.id === '16' ? 'text-charcoal-ink text-sm' : 'text-charcoal-text/80 font-semibold'}">${t.name}</strong>
+                <span class="font-bold text-charcoal-ink tabular-nums">${t.pts} pts</span>
+              </div>
+            `).join('<span class="text-oat-border">•</span>');
+
+            const riverExtra = riverEntry && riverEntry.pos > 3
+              ? `<span class="text-oat-border">•</span><div class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-full bg-loud-red text-white font-bold flex items-center justify-center text-[11px]">${riverEntry.pos}</span><strong class="text-charcoal-ink text-sm">River Plate</strong><span class="font-bold text-charcoal-ink tabular-nums">${riverEntry.pts} pts</span></div>`
+              : '';
+
+            document.getElementById('riverStandingsList').innerHTML = itemsHtml + riverExtra;
+          }
+        }
+      } catch {
+        if (badge) badge.textContent = 'Modo Offline';
+      }
+    }
+
+    // --- 3. SERIES EN TUS 6 PLATAFORMAS (AR) & "¿QUÉ MIRO HOY?" ---
+    const catalogoRecomendacionesAR = [
+      {
+        title: 'Severance',
+        platform: 'Apple TV+',
+        score: '★ 9.1 • 2 Temporadas',
+        mood: 'thriller',
+        genre: 'Thriller Psicológico / Ciencia Ficción • 48 min',
+        synopsis: 'Un grupo de empleados tiene sus recuerdos quirúrgicamente divididos entre la oficina y su vida personal. Misterio adictivo de principio a fin.'
+      },
+      {
+        title: 'The Penguin',
+        platform: 'Max',
+        score: '★ 8.8 • Miniserie (8 caps)',
+        mood: 'crimen',
+        genre: 'Crimen / Mafia / Drama Oscuro • 55 min',
+        synopsis: 'Oswald Cobb busca quedarse con el control del crimen organizado de Gotham. Actuación descomunal de Colin Farrell.'
+      },
+      {
+        title: 'Silo',
+        platform: 'Apple TV+',
+        score: '★ 8.4 • 2 Temporadas',
+        mood: 'thriller',
+        genre: 'Ciencia Ficción / Distopía • 50 min',
+        synopsis: 'Los últimos diez mil habitantes de la Tierra viven en un silo subterráneo gigante donde nadie sabe quién lo construyó ni por qué.'
+      },
+      {
+        title: 'True Detective (Temporada 1)',
+        platform: 'Max',
+        score: '★ 9.3 • Antología',
+        mood: 'crimen',
+        genre: 'Policial Negro / Misterio • 58 min',
+        synopsis: 'Dos detectives en Luisiana persiguen a un asesino ritual durante 17 años. Una de las mejores temporadas en la historia de la TV.'
+      },
+      {
+        title: 'Reacher',
+        platform: 'Prime Video',
+        score: '★ 8.1 • 3 Temporadas',
+        mood: 'epica',
+        genre: 'Acción / Thriller Policial • 48 min',
+        synopsis: 'Un ex investigador militar implacable resuelve conspiraciones a pura deducción y fuerza bruta. Súper entretenida.'
+      },
+      {
+        title: 'Tulsa King',
+        platform: 'Paramount+',
+        score: '★ 8.0 • 2 Temporadas',
+        mood: 'cortita',
+        genre: 'Mafia / Comedia Negra • 38 min (Ideal noche)',
+        synopsis: 'Sylvester Stallone es un capo mafioso de Nueva York que sale de prisión tras 25 años y lo mandan a armar un imperio en Tulsa.'
+      },
+      {
+        title: 'Shōgun',
+        platform: 'Disney+',
+        score: '★ 9.0 • 10 Capítulos',
+        mood: 'epica',
+        genre: 'Drama Histórico / Épica • 60 min',
+        synopsis: 'En el Japón feudal de 1600, el señor de la guerra Yoshii Toranaga lucha por su vida mientras un barco europeo encalla en sus costas.'
+      },
+      {
+        title: 'The Bear',
+        platform: 'Disney+',
+        score: '★ 8.6 • 3 Temporadas',
+        mood: 'cortita',
+        genre: 'Drama / Cocina / Ritmo Intenso • 30 min',
+        synopsis: 'Un joven chef de alta cocina vuelve a Chicago para hacerse cargo de la caótica sandwichería familiar. Capítulos cortos y electrizantes.'
+      },
+      {
+        title: 'Mindhunter',
+        platform: 'Netflix',
+        score: '★ 8.6 • 2 Temporadas',
+        mood: 'crimen',
+        genre: 'Thriller Psicológico / FBI • 52 min',
+        synopsis: 'Fines de los años 70: dos agentes del FBI crean la unidad de perfiles criminales entrevistando a asesinos seriales reales en prisión.'
+      },
+      {
+        title: 'Dark',
+        platform: 'Netflix',
+        score: '★ 8.7 • 3 Temporadas (Cerrada)',
+        mood: 'thriller',
+        genre: 'Ciencia Ficción / Viajes en el Tiempo • 55 min',
+        synopsis: 'La desaparición de un chico en un pueblo rodeado por un bosque revela un rompecabezas temporal que conecta a cuatro familias.'
+      },
+      {
+        title: 'Mayor of Kingstown',
+        platform: 'Paramount+',
+        score: '★ 8.2 • 3 Temporadas',
+        mood: 'crimen',
+        genre: 'Policial / Drama Criminal • 50 min',
+        synopsis: 'La familia McLusky actúa como intermediaria de poder en una ciudad donde el único negocio son las cárceles.'
+      },
+      {
+        title: 'The Boys',
+        platform: 'Prime Video',
+        score: '★ 8.7 • 4 Temporadas',
+        mood: 'epica',
+        genre: 'Acción / Sátira Oscura • 60 min',
+        synopsis: 'Un grupo de vigilantes se enfrenta a superhéroes corruptos manejados por una megacorporación.'
+      }
+    ];
+
+    function filtrarPlataforma(plat) {
+      activePlatformFilter = plat;
+      document.querySelectorAll('.plat-chip').forEach(btn => {
+        if (btn.dataset.plat === plat) {
+          btn.className = 'plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-charcoal-main text-white transition-all';
+        } else {
+          btn.className = 'plat-chip px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white transition-all';
+        }
+      });
+      renderSeries();
+    }
+
+    function renderSeries() {
+      const container = document.getElementById('watchlistContainer');
+      const watchedChip = document.getElementById('chipWatchedCount');
+      if (watchedChip) {
+        watchedChip.textContent = `Ya vistas (${(state.watchedSeries || []).length})`;
+      }
+
+      if (activePlatformFilter === 'WATCHED') {
+        const watched = state.watchedSeries || [];
+        if (watched.length === 0) {
+          container.innerHTML = `
+            <div class="p-4 rounded-xl bg-oat-canvas border border-oat-border text-center text-xs text-charcoal-text/70">
+              Todavía no marcaste ninguna serie como <strong>"Ya la vi"</strong>. Cuando lo hagas, no te las volverá a recomendar (salvo que salga temporada nueva).
+            </div>
+          `;
+          return;
+        }
+        container.innerHTML = watched.map(item => `
+          <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex items-center justify-between gap-3">
+            <div class="flex flex-col min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded bg-charcoal-main text-white text-[9px] font-bold uppercase">${item.platform}</span>
+                <span class="text-[10px] font-bold text-charcoal-text/70 uppercase tabular-nums">Vista (${item.seasonsWatched || 1} temp.)</span>
+              </div>
+              <h4 class="text-sm font-bold text-charcoal-ink truncate mt-1">${item.title}</h4>
+            </div>
+            <button type="button" onclick="restaurarSerie(${item.id})" class="px-2.5 py-1.5 rounded-lg bg-oat-subtle hover:bg-charcoal-main hover:text-white text-charcoal-ink text-[10px] font-bold uppercase transition-colors shrink-0">
+              Volver a lista
+            </button>
+          </div>
+        `).join('');
+        return;
+      }
+
+      const items = activePlatformFilter === 'ALL'
+        ? state.watchlist
+        : state.watchlist.filter(s => s.platform === activePlatformFilter);
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 rounded-xl bg-oat-canvas border border-oat-border text-center text-xs text-charcoal-text/70">
+            No tenés series en curso en <strong>${activePlatformFilter}</strong>. Tocá <em>"¿Qué miro hoy?"</em> para descubrir una.
+          </div>
+        `;
+        return;
+      }
+
+      const visibleItems = items.slice(0, 50);
+      const moreNotice = items.length > 50
+        ? `<div class="p-2 text-center text-[11px] font-semibold text-charcoal-text/70">Mostrando 50 de ${items.length} series. Usá los filtros por plataforma para ver más.</div>`
+        : '';
+
+      container.innerHTML = visibleItems.map(item => `
+        <div class="p-3 rounded-xl bg-oat-canvas border border-oat-border flex items-center justify-between gap-3">
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="px-2 py-0.5 rounded bg-charcoal-main text-white text-[9px] font-bold uppercase">${item.platform}</span>
+              <span class="text-[10px] font-bold text-loud-red uppercase tabular-nums">T${item.season} • E${String(item.ep).padStart(2, '0')}</span>
+            </div>
+            <h4 class="text-sm font-bold text-charcoal-ink truncate mt-1">${item.title}</h4>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="retrocederCapitulo(${item.id})" class="w-7 h-7 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-xs font-bold flex items-center justify-center transition-colors" title="Restar 1 capítulo">
+              -
+            </button>
+            <button type="button" onclick="avanzarCapitulo(${item.id})" class="px-2.5 py-1.5 rounded-lg bg-oat-card hover:bg-charcoal-main hover:text-white border border-oat-border text-charcoal-ink text-[10px] font-bold uppercase transition-colors" title="Sumar 1 capítulo visto">
+              +1 Cap
+            </button>
+            <button type="button" onclick="marcarYaLaVi(${item.id})" class="px-2.5 py-1.5 rounded-lg bg-charcoal-main hover:bg-loud-red text-white text-[10px] font-bold uppercase transition-colors" title="Marcar como ya vista para recomendar parecidas">
+              Ya la vi ✓
+            </button>
+            <button type="button" onclick="eliminarSerie(${item.id})" aria-label="Quitar serie" class="w-7 h-7 rounded-lg bg-oat-subtle hover:bg-loud-tint hover:text-loud-red text-charcoal-text/70 text-xs font-bold flex items-center justify-center transition-colors">
+              ✕
+            </button>
+          </div>
+        </div>
+      `).join('') + moreNotice;
+    }
+
+    async function rellenarRecomendacionEnLista() {
+      const watched = state.watchedSeries || [];
+      const inList = (title) => state.watchlist.some(s => s.title.toLowerCase() === title.toLowerCase());
+      const alreadySeen = (title) => watched.some(w => w.title.toLowerCase() === title.toLowerCase());
+
+      // Try TMDB live first if connected
+      if (state.tmdbKey) {
+        try {
+          const randomPage = Math.floor(Math.random() * 4) + 1;
+          const url = `https://api.themoviedb.org/3/discover/tv?api_key=${encodeURIComponent(state.tmdbKey)}&language=es-AR&watch_region=AR&with_watch_providers=${TMDB_PROVIDERS_AR.ALL}&sort_by=popularity.desc&page=${randomPage}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            const cand = (data.results || []).find(s => !inList(s.name) && !alreadySeen(s.name));
+            if (cand) {
+              const plat = await detectarPlataformaAR(cand.id, 'ALL');
+              state.watchlist.push({
+                id: Date.now(),
+                tmdbId: cand.id,
+                title: cand.name,
+                platform: plat,
+                season: 1,
+                ep: 1,
+                genreIds: cand.genre_ids || []
+              });
+              saveState();
+              renderSeries();
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      // Offline fallback: never leave the card empty
+      const offlineCand = catalogoRecomendacionesAR.find(s => !inList(s.title) && !alreadySeen(s.title))
+        || catalogoRecomendacionesAR.find(s => !inList(s.title));
+      if (offlineCand) {
+        state.watchlist.push({
+          id: Date.now(),
+          title: offlineCand.title,
+          platform: offlineCand.platform,
+          season: 1,
+          ep: 1
+        });
+        saveState();
+        renderSeries();
+      }
+    }
+
+    function marcarYaLaVi(id) {
+      const idx = state.watchlist.findIndex(s => s.id === id);
+      if (idx === -1) return;
+      const [item] = state.watchlist.splice(idx, 1);
+      if (!state.watchedSeries) state.watchedSeries = [];
+      state.watchedSeries.unshift({
+        id: item.id,
+        tmdbId: item.tmdbId || null,
+        title: item.title,
+        platform: item.platform,
+        seasonsWatched: item.season || 1,
+        genreIds: item.genreIds || []
+      });
+      saveState();
+      renderSeries();
+      if (state.watchlist.length < 3) {
+        rellenarRecomendacionEnLista();
+      }
+    }
+
+    function restaurarSerie(id) {
+      const idx = (state.watchedSeries || []).findIndex(s => s.id === id);
+      if (idx === -1) return;
+      const [item] = state.watchedSeries.splice(idx, 1);
+      state.watchlist.unshift({
+        id: item.id,
+        tmdbId: item.tmdbId || null,
+        title: item.title,
+        platform: item.platform,
+        season: item.seasonsWatched || 1,
+        ep: 1,
+        genreIds: item.genreIds || []
+      });
+      saveState();
+      filtrarPlataforma('ALL');
+    }
+
+    function retrocederCapitulo(id) {
+      const target = state.watchlist.find(s => s.id === id);
+      if (!target) return;
+      if (target.ep > 1) {
+        target.ep -= 1;
+      } else if (target.season > 1) {
+        target.season -= 1;
+        target.ep = 1;
+      }
+      saveState();
+      renderSeries();
+    }
+
+    async function avanzarCapitulo(id) {
+      const target = state.watchlist.find(s => s.id === id);
+      if (!target) return;
+
+      // Resolve exact episode count for current season via TMDB if available
+      if (state.tmdbKey) {
+        try {
+          if (!target.tmdbId) {
+            const sRes = await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${encodeURIComponent(state.tmdbKey)}&language=es-AR&query=${encodeURIComponent(target.title)}`);
+            if (sRes.ok) {
+              const sData = await sRes.json();
+              if (sData.results?.[0]?.id) target.tmdbId = sData.results[0].id;
+            }
+          }
+          if (target.tmdbId) {
+            const [tvRes, seaRes] = await Promise.all([
+              fetch(`https://api.themoviedb.org/3/tv/${target.tmdbId}?api_key=${encodeURIComponent(state.tmdbKey)}&language=es-AR`),
+              fetch(`https://api.themoviedb.org/3/tv/${target.tmdbId}/season/${target.season}?api_key=${encodeURIComponent(state.tmdbKey)}&language=es-AR`)
+            ]);
+            if (tvRes.ok) {
+              const tv = await tvRes.json();
+              target.totalSeasons = tv.number_of_seasons || target.season;
+            }
+            if (seaRes.ok) {
+              const sea = await seaRes.json();
+              if (sea.episodes?.length) target.maxEps = sea.episodes.length;
+            }
+          }
+        } catch {}
+      }
+
+      const maxEps = target.maxEps || (target.title === 'Fallout' ? 8 : 10);
+      if (target.ep >= maxEps) {
+        const totalSeasons = target.totalSeasons || target.season;
+        if (target.season < totalSeasons) {
+          target.season += 1;
+          target.ep = 1;
+          target.maxEps = null;
+        } else {
+          target.ep = maxEps;
+          if (confirm(`¡Terminaste la Temporada ${target.season} de "${target.title}" (${maxEps} capítulos)! ¿Querés marcarla como "Ya la vi"?`)) {
+            marcarYaLaVi(target.id);
+            return;
+          }
+        }
+      } else {
+        target.ep += 1;
+      }
+      saveState();
+      renderSeries();
+    }
+
+    function eliminarSerie(id) {
+      state.watchlist = state.watchlist.filter(s => s.id !== id);
+      saveState();
+      renderSeries();
+    }
+
+    function guardarNuevaSerie(e) {
+      e.preventDefault();
+      const title = document.getElementById('newSerieTitle').value.trim();
+      const platform = document.getElementById('newSeriePlat').value;
+      const season = Number(document.getElementById('newSerieSeason').value) || 1;
+      const ep = Number(document.getElementById('newSerieEp').value) || 1;
+      if (!title) return;
+      state.watchlist.unshift({ id: Date.now(), title, platform, season, ep });
+      saveState();
+      renderSeries();
+      e.target.reset();
+      document.getElementById('dlgAgregarSerie').close();
+    }
+
+    const TMDB_PROVIDERS_AR = {
+      'ALL': '8|119|337|1899|384|350|531',
+      'Netflix': '8',
+      'Prime Video': '119',
+      'Disney+': '337',
+      'Max': '1899|384',
+      'Apple TV+': '350',
+      'Paramount+': '531'
+    };
+
+    const TMDB_GENRES_MOOD = {
+      'ALL': '',
+      'thriller': '10765,9648',
+      'crimen': '80,9648',
+      'epica': '10759,18',
+      'cortita': '35,18'
+    };
+
+    function actualizarEstadoTmdbUI() {
+      const badge = document.getElementById('tmdbStatusBadge');
+      const input = document.getElementById('inputTmdbKey');
+      if (input) input.value = state.tmdbKey || '';
+      if (!badge) return;
+      if (state.tmdbKey) {
+        badge.textContent = '🟢 TMDB En Vivo (AR)';
+        badge.className = 'px-2 py-0.5 rounded-full bg-charcoal-main text-oat-card text-[10px] font-bold uppercase transition-colors';
+      } else {
+        badge.textContent = '🔑 Conectar TMDB';
+        badge.className = 'px-2 py-0.5 rounded-full bg-oat-subtle text-charcoal-ink text-[10px] font-bold uppercase border border-oat-border hover:border-charcoal-main transition-colors';
+      }
+    }
+
+    function guardarTmdbKey(e) {
+      e.preventDefault();
+      state.tmdbKey = document.getElementById('inputTmdbKey').value.trim();
+      saveState();
+      actualizarEstadoTmdbUI();
+      document.getElementById('dlgTmdbConfig').close();
+    }
+
+    function borrarTmdbKey() {
+      state.tmdbKey = '';
+      saveState();
+      actualizarEstadoTmdbUI();
+      document.getElementById('dlgTmdbConfig').close();
+    }
+
+    function abrirQueMiroHoy() {
+      sortearSerie();
+      document.getElementById('dlgQueMiro').showModal();
+    }
+
+    function esSerieYaVista(title, tmdbSeasons) {
+      const watched = state.watchedSeries || [];
+      const found = watched.find(w => w.title.toLowerCase() === title.toLowerCase());
+      if (!found) return false;
+      if (tmdbSeasons && tmdbSeasons > (found.seasonsWatched || 1)) return false;
+      return true;
+    }
+
+    const TMDB_ID_TO_NAME = {
+      8: 'Netflix',
+      119: 'Prime Video',
+      337: 'Disney+',
+      1899: 'Max',
+      384: 'Max',
+      350: 'Apple TV+',
+      531: 'Paramount+'
+    };
+
+    async function detectarPlataformaAR(tmdbId, fallbackPlat) {
+      if (!state.tmdbKey || !tmdbId) return fallbackPlat === 'ALL' ? 'Max' : fallbackPlat;
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/tv/${tmdbId}/watch/providers?api_key=${encodeURIComponent(state.tmdbKey)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const flatrate = data.results?.AR?.flatrate || [];
+          const matched = flatrate.map(p => TMDB_ID_TO_NAME[p.provider_id]).filter(Boolean);
+          if (matched.length > 0) return matched[0];
+          if (flatrate[0]?.provider_name) return flatrate[0].provider_name;
+        }
+      } catch {}
+      return fallbackPlat === 'ALL' ? 'Max' : fallbackPlat;
+    }
+
+    async function sortearSerie() {
+      const plat = document.getElementById('recPlatFilter').value;
+      const mood = document.getElementById('recMoodFilter').value;
+      const posterImg = document.getElementById('recPosterImg');
+      const watched = state.watchedSeries || [];
+
+      if (state.tmdbKey) {
+        try {
+          const providerParam = TMDB_PROVIDERS_AR[plat] || TMDB_PROVIDERS_AR.ALL;
+          let genreParam = TMDB_GENRES_MOOD[mood] ? `&with_genres=${TMDB_GENRES_MOOD[mood]}` : '';
+
+          // If user marked watched series with genreIds and mood is ALL, bias towards similar genres
+          const watchedGenres = [...new Set(watched.flatMap(w => w.genreIds || []))];
+          if (!genreParam && watchedGenres.length > 0 && Math.random() > 0.35) {
+            genreParam = `&with_genres=${watchedGenres.slice(0, 2).join(',')}`;
+          }
+
+          const randomPage = Math.floor(Math.random() * 3) + 1;
+          const url = `https://api.themoviedb.org/3/discover/tv?api_key=${encodeURIComponent(state.tmdbKey)}&language=es-AR&watch_region=AR&with_watch_providers=${providerParam}${genreParam}&sort_by=popularity.desc&page=${randomPage}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            let list = (data.results || []).filter(s => s.overview && s.overview.length > 10 && !esSerieYaVista(s.name));
+            if (list.length > 0) {
+              const pick = list[Math.floor(Math.random() * list.length)];
+              let seasonsCount = 1;
+              try {
+                const detRes = await fetch(`https://api.themoviedb.org/3/tv/${pick.id}?api_key=${encodeURIComponent(state.tmdbKey)}&language=es-AR`);
+                if (detRes.ok) {
+                  const det = await detRes.json();
+                  seasonsCount = det.number_of_seasons || 1;
+                }
+              } catch {}
+
+              const exactPlat = plat === 'ALL' ? await detectarPlataformaAR(pick.id, plat) : plat;
+              const simNote = watched.length > 0 ? ` • Similar a tus gustos` : '';
+              currentRecSerie = {
+                tmdbId: pick.id,
+                title: pick.name,
+                platform: exactPlat,
+                seasonsCount,
+                genreIds: pick.genre_ids || [],
+                score: `★ ${Number(pick.vote_average || 7.5).toFixed(1)} • ${seasonsCount} temp.`,
+                genre: `Disponible en ${exactPlat} (AR) • Estreno: ${pick.first_air_date || 'Reciente'}${simNote}`,
+                synopsis: pick.overview
+              };
+              document.getElementById('recBadgePlat').textContent = `En ${exactPlat}`;
+              document.getElementById('recBadgeScore').textContent = currentRecSerie.score;
+              document.getElementById('recTitle').textContent = currentRecSerie.title;
+              document.getElementById('recGenre').textContent = currentRecSerie.genre;
+              document.getElementById('recSynopsis').textContent = currentRecSerie.synopsis;
+              if (pick.poster_path && posterImg) {
+                posterImg.src = `https://image.tmdb.org/t/p/w200${pick.poster_path}`;
+                posterImg.alt = pick.name;
+                posterImg.classList.remove('hidden');
+              }
+              return;
+            }
+          }
+        } catch {
+          // Fallback to curated AR catalog below
+        }
+      }
+
+      if (posterImg) posterImg.classList.add('hidden');
+      let pool = catalogoRecomendacionesAR.filter(item => {
+        const matchPlat = plat === 'ALL' || item.platform === plat;
+        const matchMood = mood === 'ALL' || item.mood === mood;
+        return matchPlat && matchMood && !esSerieYaVista(item.title);
+      });
+      if (pool.length === 0) {
+        pool = catalogoRecomendacionesAR.filter(item => (plat === 'ALL' || item.platform === plat) && !esSerieYaVista(item.title));
+      }
+      if (pool.length === 0) pool = catalogoRecomendacionesAR;
+      const candidates = pool.length > 1 && currentRecSerie
+        ? pool.filter(s => s.title !== currentRecSerie.title)
+        : pool;
+      currentRecSerie = candidates[Math.floor(Math.random() * candidates.length)];
+
+      document.getElementById('recBadgePlat').textContent = currentRecSerie.platform;
+      document.getElementById('recBadgeScore').textContent = currentRecSerie.score;
+      document.getElementById('recTitle').textContent = currentRecSerie.title;
+      document.getElementById('recGenre').textContent = currentRecSerie.genre;
+      document.getElementById('recSynopsis').textContent = currentRecSerie.synopsis;
+    }
+
+    function marcarRecomendadaYaLaVi() {
+      if (!currentRecSerie) return;
+      if (!state.watchedSeries) state.watchedSeries = [];
+      const exists = state.watchedSeries.some(w => w.title.toLowerCase() === currentRecSerie.title.toLowerCase());
+      if (!exists) {
+        state.watchedSeries.unshift({
+          id: Date.now(),
+          tmdbId: currentRecSerie.tmdbId || null,
+          title: currentRecSerie.title,
+          platform: currentRecSerie.platform,
+          seasonsWatched: currentRecSerie.seasonsCount || 1,
+          genreIds: currentRecSerie.genreIds || []
+        });
+        saveState();
+        renderSeries();
+      }
+      sortearSerie();
+    }
+
+    function agregarRecomendadaAMiLista() {
+      if (!currentRecSerie) return;
+      const exists = state.watchlist.some(s => s.title.toLowerCase() === currentRecSerie.title.toLowerCase());
+      if (!exists) {
+        state.watchlist.unshift({
+          id: Date.now(),
+          title: currentRecSerie.title,
+          platform: currentRecSerie.platform,
+          season: 1,
+          ep: 1
+        });
+        saveState();
+        renderSeries();
+      }
+      document.getElementById('dlgQueMiro').close();
+    }
+
+    // --- 4. HEAVY & PROGRESSIVE METAL RADAR (EN INGLÉS - METAL ARCHIVES) ---
+    const metalBandsGraph = [
+      {
+        name: 'Dream Theater',
+        genre: 'Progressive Metal • USA (English)',
+        year: '2025',
+        essential: 'Metropolis Pt. 2: Scenes from a Memory / Images and Words',
+        latest: 'Parasomnia (2025)',
+        metallumUrl: 'https://www.metal-archives.com/bands/Dream_Theater/37',
+        why: 'La piedra angular del metal progresivo en inglés: composiciones épicas, cambios de compás quirúrgicos y melodías memorables.',
+        similars: ['Symphony X', 'Haken', 'Queensrÿche', 'Fates Warning', 'Porcupine Tree', 'Opeth']
+      },
+      {
+        name: 'Opeth',
+        genre: 'Progressive Metal • Sweden (English lyrics)',
+        year: '2024',
+        essential: 'Blackwater Park / Ghost Reveries',
+        latest: 'The Last Will and Testament',
+        metallumUrl: 'https://www.metal-archives.com/bands/Opeth/38',
+        why: 'Maestros del contraste entre pasajes acústicos oscuros, rock progresivo setentoso y la pesadez más sofisticada del metal.',
+        similars: ['Porcupine Tree', 'Dream Theater', 'Mastodon', 'Leprous', 'Haken', 'Queensrÿche']
+      },
+      {
+        name: 'Haken',
+        genre: 'Progressive Metal • UK (English)',
+        year: '2023',
+        essential: 'The Mountain / Virus',
+        latest: 'Fauna',
+        metallumUrl: 'https://www.metal-archives.com/bands/Haken/3540271545',
+        why: 'La banda británica que tomó la posta de Dream Theater y Gentle Giant, combinando riffs pesados de 8 cuerdas con coros gigantes.',
+        similars: ['Dream Theater', 'Leprous', 'Caligula\'s Horse', 'Symphony X', 'Opeth']
+      },
+      {
+        name: 'Symphony X',
+        genre: 'Progressive / Power / Heavy Metal • USA (English)',
+        year: 'Clásico',
+        essential: 'The Divine Wings of Tragedy / V: The New Mythology Suite',
+        latest: 'Underworld',
+        metallumUrl: 'https://www.metal-archives.com/bands/Symphony_X/172',
+        why: 'Si te gusta tanto el Heavy Metal potente como el Metal Progresivo técnico, la voz de Russell Allen y las guitarras de Michael Romeo son imbatibles.',
+        similars: ['Dream Theater', 'Queensrÿche', 'Fates Warning', 'Iron Maiden', 'Judas Priest']
+      },
+      {
+        name: 'Queensrÿche',
+        genre: 'Heavy / Progressive Metal • USA (English)',
+        year: 'Leyenda',
+        essential: 'Operation: Mindcrime / Empire',
+        latest: 'Digital Noise Alliance',
+        metallumUrl: 'https://www.metal-archives.com/bands/Queensr%C3%BFche/339',
+        why: 'El puente perfecto entre el Heavy Metal clásico de Iron Maiden/Judas Priest y el nacimiento del Metal Progresivo conceptual.',
+        similars: ['Fates Warning', 'Iron Maiden', 'Dream Theater', 'Symphony X', 'Judas Priest']
+      },
+      {
+        name: 'Iron Maiden',
+        genre: 'Heavy Metal con alma Progresiva • UK (English)',
+        year: 'Leyenda',
+        essential: 'Seventh Son of a Seventh Son / Powerslave',
+        latest: 'Senjutsu',
+        metallumUrl: 'https://www.metal-archives.com/bands/Iron_Maiden/25',
+        why: 'Cabalgatas de bajo, guitarras gemelas y temas largos épicos que influenciaron a todas las bandas de metal progresivo.',
+        similars: ['Judas Priest', 'Queensrÿche', 'Symphony X', 'Fates Warning', 'Dream Theater']
+      },
+      {
+        name: 'Fates Warning',
+        genre: 'Progressive Heavy Metal • USA (English)',
+        year: 'Culto',
+        essential: 'Parallels / A Pleasant Shade of Gray',
+        latest: 'Long Day Good Night',
+        metallumUrl: 'https://www.metal-archives.com/bands/Fates_Warning/138',
+        why: 'Junto a Dream Theater y Queensrÿche forman la trilogía fundacional del metal progresivo estadounidense.',
+        similars: ['Queensrÿche', 'Dream Theater', 'Symphony X', 'Porcupine Tree']
+      },
+      {
+        name: 'Porcupine Tree',
+        genre: 'Progressive Rock / Metal • UK (English)',
+        year: '2022',
+        essential: 'In Absentia / Fear of a Blank Planet',
+        latest: 'Closure / Continuation',
+        metallumUrl: 'https://www.metal-archives.com/bands/Opeth/38',
+        why: 'El proyecto de Steven Wilson y Gavin Harrison: atmósferas hipnóticas, riffs pesados y producción impecable.',
+        similars: ['Opeth', 'Dream Theater', 'Haken', 'Leprous']
+      },
+      {
+        name: 'Leprous',
+        genre: 'Progressive Metal • Norway (English lyrics)',
+        year: '2024',
+        essential: 'The Congregation / Bilateral',
+        latest: 'Melodies of Atonement',
+        metallumUrl: 'https://www.metal-archives.com/bands/Leprous/67754',
+        why: 'Metal progresivo moderno y dramático en inglés con una de las baterías y voces más impresionantes de la escena actual.',
+        similars: ['Haken', 'Opeth', 'Caligula\'s Horse', 'Porcupine Tree']
+      },
+      {
+        name: 'Caligula\'s Horse',
+        genre: 'Progressive Metal • Australia (English)',
+        year: '2024',
+        essential: 'In Contact / Bloom',
+        latest: 'Charcoal Grace (2024)',
+        metallumUrl: 'https://www.metal-archives.com/bands/Caligula%27s_Horse/3540325978',
+        why: 'Riffs pesados, polirritmias modernas y estribillos súper melódicos en inglés. Charcoal Grace es uno de los mejores discos prog recientes.',
+        similars: ['Haken', 'Leprous', 'Dream Theater', 'Opeth']
+      },
+      {
+        name: 'Mastodon',
+        genre: 'Progressive / Heavy Sludge Metal • USA (English)',
+        year: 'Clásico',
+        essential: 'Crack the Skye / Leviathan',
+        latest: 'Hushed and Grim',
+        metallumUrl: 'https://www.metal-archives.com/bands/Mastodon/1385',
+        why: 'Riffs monumentales y discos conceptuales como Crack the Skye que mezclan la fuerza del heavy metal con estructuras progresivas.',
+        similars: ['Opeth', 'Iron Maiden', 'Dream Theater']
+      },
+      {
+        name: 'Judas Priest',
+        genre: 'Heavy Metal • UK (English)',
+        year: '2024',
+        essential: 'Painkiller / Screaming for Vengeance',
+        latest: 'Invincible Shield (2024)',
+        metallumUrl: 'https://www.metal-archives.com/bands/Judas_Priest/97',
+        why: 'Puro Heavy Metal británico en estado de gracia; su último disco Invincible Shield demuestra que siguen en la cima.',
+        similars: ['Iron Maiden', 'Queensrÿche', 'Symphony X']
+      }
+    ];
+
+    async function fetchMetalAlbumArt(bandName) {
+      const imgEl = document.getElementById('metalSpotlightArt');
+      const fallbackEl = document.getElementById('metalSpotlightFallback');
+      const graphImgEl = document.getElementById('graphBandArt');
+      try {
+        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(bandName)}&entity=album&limit=2`);
+        if (!res.ok) throw new Error('iTunes error');
+        const data = await res.json();
+        const art = data.results?.[0]?.artworkUrl100;
+        if (art) {
+          const hdArt = art.replace('100x100bb', '300x300bb');
+          if (imgEl && fallbackEl) {
+            imgEl.src = hdArt;
+            imgEl.alt = bandName;
+            imgEl.classList.remove('hidden');
+            fallbackEl.classList.add('hidden');
+          }
+          if (graphImgEl) {
+            graphImgEl.src = hdArt;
+            graphImgEl.alt = bandName;
+            graphImgEl.classList.remove('hidden');
+          }
+          return;
+        }
+      } catch {
+        // Use clean fallback icon
+      }
+      if (imgEl && fallbackEl) {
+        imgEl.classList.add('hidden');
+        fallbackEl.classList.remove('hidden');
+      }
+      if (graphImgEl) graphImgEl.classList.add('hidden');
+    }
+
+    function cargarArtistaSpotify(artistId) {
+      const embedUrl = `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0`;
+      state.spotifyEmbedUrl = embedUrl;
+      saveState();
+      const frame = document.getElementById('spotifyEmbedFrame');
+      if (frame) frame.src = embedUrl;
+    }
+
+    const SPOTIFY_ARTIST_IDS = {
+      'Dream Theater': '2aaLAng2L2aWD2FClzwiep',
+      'Opeth': '0ybFZ2Ab08V8hueghSXm6E',
+      'Haken': '2SRIVGDkdqQnrQdaXxDkJt',
+      'Symphony X': '4MnZkh4dpNmTMPxkl4Ev5L',
+      'Queensrÿche': '2OgUPVlWYgGBGMefZgGvCO',
+      'Iron Maiden': '6mdiAmATAx73kdxrNrnlao',
+      'Fates Warning': '4S6URhg3PMKnCv9clR4ejE',
+      'Porcupine Tree': '5NXHXK6hOCotCF8lvGM1I0',
+      'Leprous': '4lgrzShsg2FLA89UM2fdO5',
+      'Caligula\'s Horse': '6Zd7AjXsoLaweP9FHyudVC',
+      'Mastodon': '1Dvfqq39HxvCJ3GvfeIFuT',
+      'Judas Priest': '2tRsMl4eGxwoNabM08Dm4I'
+    };
+
+    function cargarUrlSpotifyCustom(e) {
+      e.preventDefault();
+      const raw = document.getElementById('inputSpotifyUrl').value.trim();
+      const match = raw.match(/open\.spotify\.com\/(playlist|album|artist|track)\/([a-zA-Z0-9]+)/);
+      if (!match) {
+        alert('Pegá un link válido de Spotify (ej: https://open.spotify.com/playlist/...)');
+        return;
+      }
+      const embedUrl = `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+      state.spotifyEmbedUrl = embedUrl;
+      saveState();
+      const frame = document.getElementById('spotifyEmbedFrame');
+      if (frame) frame.src = embedUrl;
+    }
+
+    function renderMetalSpotlight() {
+      const band = metalBandsGraph[state.metalBandIndex % metalBandsGraph.length];
+      document.getElementById('metalSpotlightYear').textContent = band.year;
+      document.getElementById('metalSpotlightSubgenre').textContent = band.genre;
+      document.getElementById('metalSpotlightBand').textContent = band.name;
+      document.getElementById('metalSpotlightAlbum').textContent = `Esencial: ${band.essential}`;
+      document.getElementById('metalSimilarList').textContent = band.similars.join(' • ');
+      document.getElementById('metalSimilarCount').textContent = `${band.similars.length} conectadas`;
+      fetchMetalAlbumArt(band.name);
+    }
+
+    function rotarBandaMetal() {
+      state.metalBandIndex = (state.metalBandIndex + 1) % metalBandsGraph.length;
+      saveState();
+      renderMetalSpotlight();
+    }
+
+    function abrirGrafoMetal(bandName) {
+      if (bandName) {
+        const idx = metalBandsGraph.findIndex(b => b.name.toLowerCase() === bandName.toLowerCase());
+        if (idx !== -1) state.metalBandIndex = idx;
+      }
+      renderMetalSpotlight();
+      renderGrafoModal();
+      const dlg = document.getElementById('dlgMetal');
+      if (!dlg.open) dlg.showModal();
+    }
+
+    let currentCustomBandName = null;
+
+    async function buscarBandaMetal(e) {
+      e.preventDefault();
+      const q = document.getElementById('inputSearchBand').value.trim();
+      if (!q) return;
+      await cargarBandaPorNombre(q);
+    }
+
+    function guardarBandaActualEnFavoritas() {
+      const bandName = document.getElementById('graphBandName').textContent.trim();
+      if (!bandName) return;
+      const exists = metalBandsGraph.some(b => b.name.toLowerCase() === bandName.toLowerCase());
+      if (!exists) {
+        metalBandsGraph.unshift({
+          name: bandName,
+          genre: document.getElementById('graphBandGenre').textContent || 'Heavy / Progressive Metal (EN)',
+          year: 'Favorita',
+          essential: 'Discografía en Spotify / Metal Archives',
+          latest: '',
+          metallumUrl: `https://www.metal-archives.com/search?searchString=${encodeURIComponent(bandName)}&type=band_name`,
+          why: `Banda agregada por vos a tu radar personal.`,
+          similars: ['Dream Theater', 'Opeth', 'Iron Maiden', 'Symphony X']
+        });
+        state.metalBandIndex = 0;
+        saveState();
+        renderMetalSpotlight();
+        renderGrafoModal();
+      }
+    }
+
+    async function cargarBandaPorNombre(bandName) {
+      currentCustomBandName = bandName;
+      document.getElementById('graphBandName').textContent = bandName;
+      document.getElementById('graphBandGenre').textContent = 'Buscando en iTunes & MusicBrainz...';
+      document.getElementById('graphBandWhy').textContent = `Explorando discografía y perfil de ${bandName} en tiempo real.`;
+      document.getElementById('graphMetallumLink').href = `https://www.metal-archives.com/search?searchString=${encodeURIComponent(bandName)}&type=band_name`;
+      const thisIsLink = document.getElementById('graphThisIsLink');
+      if (thisIsLink) thisIsLink.href = `https://open.spotify.com/search/${encodeURIComponent('This Is ' + bandName)}`;
+
+      // 1. Fetch real albums + artwork from iTunes Search API
+      const albumsRow = document.getElementById('graphBandAlbumsRow');
+      try {
+        const itRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(bandName)}&entity=album&limit=6`);
+        if (itRes.ok) {
+          const itData = await itRes.json();
+          const albums = (itData.results || []).filter(a => a.collectionName);
+          if (albums.length > 0 && albumsRow) {
+            const uniqueAlbums = [...new Set(albums.map(a => a.collectionName))].slice(0, 4);
+            albumsRow.innerHTML = `<span class="text-[10px] font-bold uppercase text-charcoal-muted mr-1">Discos:</span>` +
+              uniqueAlbums.map(album => `
+                <a href="https://open.spotify.com/search/${encodeURIComponent(bandName + ' ' + album)}" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-full bg-charcoal-tile hover:bg-[#1DB954] hover:text-black text-oat-card text-[11px] font-bold border border-white/15 flex items-center gap-1 transition-colors">
+                  <span class="material-symbols-outlined text-[13px]">album</span>
+                  <span>${album}</span>
+                </a>
+              `).join('');
+            document.getElementById('graphBandGenre').textContent = `${albums[0].primaryGenreName || 'Metal'} • ${albums[0].country || 'EN'}`;
+          }
+        }
+      } catch {}
+
+      fetchMetalAlbumArt(bandName);
+
+      // 2. Resolve Spotify Artist ID dynamically via MusicBrainz (works for ANY band!)
+      const frame = document.getElementById('spotifyEmbedFrame');
+      const knownId = SPOTIFY_ARTIST_IDS[bandName];
+      if (knownId && frame) {
+        frame.src = `https://open.spotify.com/embed/artist/${knownId}?utm_source=generator&theme=0`;
+        return;
+      }
+      try {
+        const mbRes = await fetch(`https://musicbrainz.org/ws/2/artist?query=artist:${encodeURIComponent(bandName)}&fmt=json&limit=1`);
+        if (mbRes.ok) {
+          const mbData = await mbRes.json();
+          const artist = mbData.artists?.[0];
+          if (artist?.id) {
+            const detRes = await fetch(`https://musicbrainz.org/ws/2/artist/${artist.id}?inc=url-rels&fmt=json`);
+            if (detRes.ok) {
+              const detData = await detRes.json();
+              const spRel = (detData.relations || []).find(r => r.url?.resource?.includes('open.spotify.com/artist/'));
+              const spMatch = spRel?.url?.resource?.match(/open\.spotify\.com\/artist\/([a-zA-Z0-9]+)/);
+              if (spMatch?.[1] && frame) {
+                SPOTIFY_ARTIST_IDS[bandName] = spMatch[1];
+                frame.src = `https://open.spotify.com/embed/artist/${spMatch[1]}?utm_source=generator&theme=0`;
+              }
+            }
+          }
+        }
+      } catch {}
+    }
+
+    function renderGrafoModal() {
+      const activeBand = metalBandsGraph[state.metalBandIndex % metalBandsGraph.length];
+      document.getElementById('graphBandGenre').textContent = activeBand.genre;
+      document.getElementById('graphBandName').textContent = activeBand.name;
+      document.getElementById('graphBandWhy').textContent = activeBand.why;
+      document.getElementById('graphMetallumLink').href = activeBand.metallumUrl;
+
+      const albumsList = activeBand.essential.split('/').map(a => a.trim()).filter(Boolean);
+      const albumsRow = document.getElementById('graphBandAlbumsRow');
+      if (albumsRow) {
+        albumsRow.innerHTML = `<span class="text-[10px] font-bold uppercase text-charcoal-muted mr-1">Discos esenciales:</span>` +
+          albumsList.map(album => `
+            <a href="https://open.spotify.com/search/${encodeURIComponent(activeBand.name + ' ' + album)}" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-full bg-charcoal-tile hover:bg-[#1DB954] hover:text-black text-oat-card text-[11px] font-bold border border-white/15 flex items-center gap-1 transition-colors" title="Abrir disco en Spotify">
+              <span class="material-symbols-outlined text-[13px]">album</span>
+              <span>${album}</span>
+            </a>
+          `).join('');
+      }
+
+      const thisIsLink = document.getElementById('graphThisIsLink');
+      if (thisIsLink) thisIsLink.href = `https://open.spotify.com/search/${encodeURIComponent('This Is ' + activeBand.name)}`;
+
+      const spId = SPOTIFY_ARTIST_IDS[activeBand.name];
+      const frame = document.getElementById('spotifyEmbedFrame');
+      if (spId && frame) {
+        const artistUrl = `https://open.spotify.com/embed/artist/${spId}?utm_source=generator&theme=0`;
+        if (frame.src !== artistUrl) frame.src = artistUrl;
+      } else if (frame && state.spotifyEmbedUrl && frame.src !== state.spotifyEmbedUrl) {
+        frame.src = state.spotifyEmbedUrl;
+      }
+      fetchMetalAlbumArt(activeBand.name);
+
+      // Top selector chips
+      const chipsContainer = document.getElementById('metalGraphChips');
+      chipsContainer.innerHTML = metalBandsGraph.map((b, idx) => {
+        const isCurrent = idx === (state.metalBandIndex % metalBandsGraph.length);
+        return `
+          <button type="button" onclick="seleccionarNodoMetal(${idx})" class="px-3 py-1 rounded-full text-[11px] font-bold uppercase transition-all ${isCurrent ? 'bg-loud-red text-white shadow-sm' : 'bg-oat-subtle text-charcoal-text hover:bg-charcoal-main hover:text-white'}">
+            ${b.name}
+          </button>
+        `;
+      }).join('');
+
+      // Similar connected nodes
+      const nodesContainer = document.getElementById('graphSimilarNodes');
+      nodesContainer.innerHTML = activeBand.similars.map(simName => `
+        <button type="button" onclick="abrirGrafoMetal('${simName.replace(/'/g, "\\'")}')" class="px-3.5 py-2 rounded-xl bg-charcoal-tile hover:bg-loud-red text-oat-card text-xs font-bold flex items-center gap-1.5 border border-white/10 transition-all">
+          <span class="material-symbols-outlined text-[15px]">hub</span>
+          <span>${simName}</span>
+        </button>
+      `).join('');
+    }
+
+    function seleccionarNodoMetal(idx) {
+      state.metalBandIndex = idx;
+      saveState();
+      renderMetalSpotlight();
+      renderGrafoModal();
+    }
+
+    // --- 5. WHATSAPP & NATIVE NOTIFICATIONS ---
+    function guardarConfigWa() {
+      state.waPhone = document.getElementById('inputWaPhone').value.trim();
+      saveState();
+    }
+
+    function activarNotificacionesNativas() {
+      if (!('Notification' in window)) {
+        alert('Tu navegador no soporta notificaciones de escritorio, pero podés usar el botón de WhatsApp directo.');
+        return;
+      }
+      Notification.requestPermission().then(perm => {
+        if (perm === 'granted') {
+          new Notification('Mi Hub. — Recordatorio Activo', {
+            body: '💊 20:45 HS: Acordate de tomar tu pastilla antes de cenar. Hoy juega River el domingo 19:15 hs.'
+          });
+        } else {
+          alert('Permiso de notificaciones no concedido. Podés usar el envío directo a WhatsApp.');
+        }
+      });
+    }
+
+    function enviarMensajePruebaWhatsApp() {
+      guardarConfigWa();
+      const todayPills = state.pillsTakenByDate[todayKey] || { manana: false, noche: false };
+      const smart = getSmartGlucoseRecommendation();
+      const match = riverFixtures[state.riverMatchIndex % riverFixtures.length];
+      const msg = `*Mi Hub. — Resumen de Hoy*\n` +
+        `• Pastilla 05:00 AM (${state.pillNames.manana}): *${todayPills.manana ? 'Tomada' : 'Pendiente'}*\n` +
+        `• Pastilla 20:45 HS (${state.pillNames.noche}): *${todayPills.noche ? 'Tomada' : 'Pendiente (Antes de cenar)'}*\n` +
+        `• Próxima glucemia: *${smart.nextSlot}*\n` +
+        `• River Plate: *${match.title}* (${match.stadium})`;
+      const phone = (state.waPhone || '').replace(/\D/g, '');
+      const url = phone
+        ? `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank', 'noopener');
+    }
+
+    // --- 6. NAVIGATION FILTERING (MOBILE & DESKTOP TABS) ---
+    function filtrarSeccion(sec) {
+      const map = {
+        salud: 'sec-salud',
+        series: 'sec-series',
+        river: 'sec-river',
+        metal: 'sec-metal'
+      };
+      document.querySelectorAll('.bento-section').forEach(el => {
+        if (sec === 'all' || el.id === map[sec]) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        if (btn.dataset.nav === sec) {
+          btn.className = 'nav-tab px-4 py-1.5 rounded-lg text-sm font-bold bg-charcoal-ink text-white shadow-sm transition-all';
+        } else {
+          btn.className = 'nav-tab px-4 py-1.5 rounded-lg text-sm font-semibold text-charcoal-text/80 hover:text-charcoal-ink transition-all';
+        }
+      });
+      document.querySelectorAll('.mnav-btn').forEach(btn => {
+        if (btn.dataset.mnav === sec) {
+          btn.className = 'mnav-btn flex flex-col items-center justify-center gap-0.5 text-loud-red min-w-[56px]';
+        } else {
+          btn.className = 'mnav-btn flex flex-col items-center justify-center gap-0.5 text-oat-card/70 hover:text-white min-w-[56px]';
+        }
+      });
+    }
+
+    // --- 7. IN-BROWSER SCHEDULED REMINDER CHECKER (05:00, 20:45, 23:00 VIE/SAB) ---
+    let lastNotifiedMinute = '';
+    function revisarAlertasHorario() {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const now = new Date();
+      const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (hhmm === lastNotifiedMinute) return;
+      const todayPills = state.pillsTakenByDate[todayKey] || { manana: false, noche: false };
+      if (hhmm === '05:00' && !todayPills.manana) {
+        lastNotifiedMinute = hhmm;
+        new Notification('💊 Mi Hub — 05:00 AM', { body: `Hora de tu ${state.pillNames.manana}` });
+      } else if (hhmm === '20:45' && !todayPills.noche) {
+        lastNotifiedMinute = hhmm;
+        new Notification('💊 Mi Hub — Pastilla Pre-Cena', { body: `Antes de cenar (antes de las 21:00 hs): ${state.pillNames.noche}` });
+      } else if (hhmm === '23:00' && (now.getDay() === 5 || now.getDay() === 6)) {
+        lastNotifiedMinute = hhmm;
+        new Notification('🩸 Mi Hub — Glucemia Post-Cena', { body: 'Viernes/Sábado 23:00 hs: toca medir glucemia 2 hs después de cenar.' });
+      }
+    }
+    setInterval(revisarAlertasHorario, 30000);
+
+    // Initialize everything on load
+    renderSalud();
+    renderRiver();
+    renderSeries();
+    renderMetalSpotlight();
+    actualizarEstadoTmdbUI();
+    cargarRiverEnVivo();
+  </script>
+</body>
+</html>

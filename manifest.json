@@ -1,0 +1,10 @@
+{
+  "name": "Mi Hub. — Todo en su lugar",
+  "short_name": "Mi Hub",
+  "description": "Dashboard personal 60-30-10: Pastillas & Glucemia T2, River Plate, Tus 6 Plataformas AR y Heavy/Prog Metal.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F4EFE6",
+  "theme_color": "#222327",
+  "lang": "es-AR"
+}
